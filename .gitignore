@@ -1,0 +1,6 @@
+# Local secrets - never commit
+.env
+
+# Dependencies and build artifacts
+node_modules
+.next
