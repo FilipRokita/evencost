@@ -5,9 +5,6 @@
 node_modules
 .next
 
-# Dev-only: the folder is committed, its contents are not
-dev-only/*
-!dev-only/README.md
-
-# Implementation plans - local to one machine, like dev-only
+# Local-only folders - not part of the repo, described in CLAUDE.md
+dev-only/
 .claude/plans/

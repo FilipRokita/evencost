@@ -66,7 +66,7 @@ later.
 
 Work that never gets committed lives in two gitignored folders:
 
-- [`dev-only/`](dev-only/) — developer scratch: prototypes, mocks, experiments
+- `dev-only/` — developer scratch: prototypes, mocks, experiments
 - `.claude/plans/` — implementation plans
 
 Anything worth keeping goes in [`docs/`](docs/) instead.

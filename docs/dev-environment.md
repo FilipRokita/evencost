@@ -110,6 +110,6 @@ Debian's is wanted.
 
 ## Dev only
 
-[`dev-only/`](../dev-only/) is committed but its contents are gitignored — a
-scratch space for prototypes and mocks that never reaches the repo. It is kept
-out of the build and out of type checking.
+`dev-only/` is a gitignored scratch space for prototypes and mocks. It is not in
+the repo at all — create it yourself when you need it, and keep it out of the
+build and out of type checking.
