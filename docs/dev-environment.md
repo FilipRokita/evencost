@@ -72,9 +72,11 @@ On creation, `.devcontainer/setup.sh` runs:
 creates it but leaves it stopped, because nothing in a container runs the init
 system that would normally start it.
 
-`setup.sh` runs on container **creation only**. After a plain container restart
-it does not re-run, so the PostgreSQL cluster stays down and must be started by
-hand with `pg_ctlcluster 17 main start`.
+`setup.sh` runs on container **creation only**, so it does not re-run after a
+plain restart. `postStartCommand` covers that gap by bringing the cluster back
+up on every start. Its trailing `|| true` is deliberate: on a rebuild
+`db-setup.sh` has already started the cluster, and `pg_ctlcluster` exits non-zero
+when it finds it running.
 
 ## Gotchas
 

@@ -5,7 +5,7 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:5-24-trixie",
 
-	// Pass extra args to docker run. Here we load env vars from the .env file.
+	// Pass extra args to docker run. Here we load env vars from .devcontainer/.env.
 	"runArgs": ["--env-file", ".devcontainer/.env"],
 
 
@@ -17,6 +17,9 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "bash .devcontainer/setup.sh",
+
+	// This brings the cluster back up after a plain container restart.
+	"postStartCommand": "sudo pg_ctlcluster 17 main start || true",
 
 	// Configure tool-specific properties.
 	"customizations": {
