@@ -6,7 +6,7 @@
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:5-24-trixie",
 
 	// Pass extra args to docker run. Here we load env vars from the .env file.
-	"runArgs": ["--env-file", ".env"],
+	"runArgs": ["--env-file", ".devcontainer/.env"],
 
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
