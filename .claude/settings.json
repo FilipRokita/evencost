@@ -1,5 +1,6 @@
 {
   "env": {
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
     "ANTHROPIC_MODEL": "deepseek-flash[1m]"
   }
 }

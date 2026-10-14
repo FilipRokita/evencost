@@ -11,7 +11,7 @@ Configuration is split by who consumes it:
 
 | File | Holds | Read by |
 | :--- | :--- | :--- |
-| `.devcontainer/.env` | `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, `CONTEXT7_API_KEY` | Claude Code, MCP servers |
+| `.devcontainer/.env` | `ANTHROPIC_AUTH_TOKEN`, `CONTEXT7_API_KEY` | Claude Code, MCP servers |
 | `.env` | `DATABASE_URL`, app secrets | the application |
 
 The split exists so the application process never carries the agent's
@@ -31,16 +31,22 @@ Claude Code runs inside the container, pointed at DeepSeek's
 Anthropic-compatible API rather than Anthropic's own. DeepSeek serves two
 models: `deepseek-flash` and `deepseek-v4-pro`.
 
-**The model is set in [`.claude/settings.json`](../.claude/settings.json).**
-Change it there:
+**The provider and the model are set in
+[`.claude/settings.json`](../.claude/settings.json).** Change them there:
 
 ```json
-{ "env": { "ANTHROPIC_MODEL": "deepseek-flash[1m]" } }
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
+    "ANTHROPIC_MODEL": "deepseek-flash[1m]"
+  }
+}
 ```
 
-The model is not a secret and is the setting most likely to change, so it lives
-in a committed file rather than the gitignored one. A change takes effect on the
-next launch, with no rebuild.
+Neither is a secret, so both live in a committed file — and the model is the
+setting most likely to change, so editing it here takes effect on the next
+launch with no rebuild. A teammate who wants a different model can override it
+in `.claude/settings.local.json`, which is personal and outranks this file.
 
 For a single run, override it in the shell instead:
 
@@ -48,12 +54,11 @@ For a single run, override it in the shell instead:
 ANTHROPIC_MODEL=deepseek-v4-pro claude
 ```
 
-The credentials stay in `.devcontainer/.env`, read once when the container is
-created:
+**The key stays in `.devcontainer/.env`**, read once when the container is
+created. That file is gitignored and holds nothing but credentials:
 
 | Variable | Value |
 | :--- | :--- |
-| `ANTHROPIC_BASE_URL` | `https://api.deepseek.com/anthropic` |
 | `ANTHROPIC_AUTH_TOKEN` | DeepSeek API key |
 | `CONTEXT7_API_KEY` | Context7 key — optional, only raises rate limits |
 
