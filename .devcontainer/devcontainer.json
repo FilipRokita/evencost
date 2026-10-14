@@ -19,7 +19,7 @@
 	"postCreateCommand": "bash .devcontainer/setup.sh",
 
 	// This brings the cluster back up after a plain container restart.
-	"postStartCommand": "sudo pg_ctlcluster 17 main start || true",
+	"postStartCommand": "bash .devcontainer/db-start.sh",
 
 	// Configure tool-specific properties.
 	"customizations": {

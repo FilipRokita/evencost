@@ -7,7 +7,7 @@ sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-17
 
 # The package creates the cluster but nothing starts it inside a container
-sudo pg_ctlcluster 17 main start || echo "PostgreSQL cluster already running"
+bash ".devcontainer/db-start.sh"
 
 # Role + database the app connects with. Must match DATABASE_URL in .env.
 sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='evencost'" | grep -q 1 \

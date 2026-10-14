@@ -73,15 +73,20 @@ On creation, `.devcontainer/setup.sh` runs:
   starts the cluster, creates the local `evencost` role and database
 - `yarn install`
 
-`.devcontainer/db-setup.sh` starts the cluster explicitly. The Debian package
-creates it but leaves it stopped, because nothing in a container runs the init
-system that would normally start it.
+`.devcontainer/db-start.sh` owns starting the cluster. The Debian package creates
+it but leaves it stopped, because nothing in a container runs the init system
+that would normally start it. The script skips the start when the cluster is
+already online, so it is safe to call from anywhere.
 
-`setup.sh` runs on container **creation only**, so it does not re-run after a
-plain restart. `postStartCommand` covers that gap by bringing the cluster back
-up on every start. Its trailing `|| true` is deliberate: on a rebuild
-`db-setup.sh` has already started the cluster, and `pg_ctlcluster` exits non-zero
-when it finds it running.
+Both lifecycle hooks call it:
+
+| Hook | When | Why it calls `db-start.sh` |
+| :--- | :--- | :--- |
+| `postCreateCommand` → `db-setup.sh` | container creation | the role and database need a running server |
+| `postStartCommand` | every start, including the first | `setup.sh` does not re-run after a plain restart |
+
+Lifecycle scripts run in sequence, so a failing `postCreateCommand` skips
+`postStartCommand` entirely.
 
 ## Gotchas
 
