@@ -53,6 +53,9 @@ clear; enumerate alternatives only in the case §1 describes. Verify versions,
 flags and APIs against the installed tooling or the official docs before
 stating them — do not answer from memory.
 
+Break it up. Short paragraphs, lists, tables — one idea per line. Never a wall
+of text to wade through.
+
 ## Documentation
 
 [`README.md`](README.md) is imported at the top of this file, so it is always in
