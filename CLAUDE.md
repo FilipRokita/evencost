@@ -61,3 +61,12 @@ context — keep it current. Everything else lives in [`docs/`](docs/), which is
 
 Whichever one a change makes stale, update it in the same change rather than
 later.
+
+## Local-only folders
+
+Work that never gets committed lives in two gitignored folders:
+
+- [`dev-only/`](dev-only/) — developer scratch: prototypes, mocks, experiments
+- `.claude/plans/` — implementation plans
+
+Anything worth keeping goes in [`docs/`](docs/) instead.

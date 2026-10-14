@@ -4,3 +4,10 @@
 # Dependencies and build artifacts
 node_modules
 .next
+
+# Dev-only: the folder is committed, its contents are not
+dev-only/*
+!dev-only/README.md
+
+# Implementation plans - local to one machine, like dev-only
+.claude/plans/

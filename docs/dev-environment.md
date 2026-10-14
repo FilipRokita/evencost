@@ -107,3 +107,9 @@ Lifecycle scripts run in sequence, so a failing `postCreateCommand` skips
 (trixie) ships PostgreSQL 17 as its default, so the third-party repository and
 its signing key are unnecessary. Reach for PGDG only when a version other than
 Debian's is wanted.
+
+## Dev only
+
+[`dev-only/`](../dev-only/) is committed but its contents are gitignored — a
+scratch space for prototypes and mocks that never reaches the repo. It is kept
+out of the build and out of type checking.
