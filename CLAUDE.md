@@ -55,6 +55,9 @@ stating them — do not answer from memory.
 
 ## Documentation
 
-Project knowledge lives in [`docs/`](docs/). It is not loaded automatically —
-read what is relevant there before acting, and update it in the same change
-when something makes it stale.
+[`README.md`](README.md) is imported at the top of this file, so it is always in
+context — keep it current. Everything else lives in [`docs/`](docs/), which is
+**not** loaded automatically: read what is relevant before acting there.
+
+Whichever one a change makes stale, update it in the same change rather than
+later.
