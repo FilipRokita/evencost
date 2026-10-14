@@ -1,0 +1,60 @@
+@README.md
+
+# Agent Guidelines & Behavior
+
+You are the hands; the human is the architect. Move fast, but never faster than
+the human can verify.
+
+## 1. Think Before Coding
+
+- Never silently assume or guess requirements. If an ask is ambiguous, stop and
+  ask clarifying questions first.
+- Surface tradeoffs: present 2-3 viable paths if there is no obvious single
+  choice.
+- State your assumptions explicitly before implementing non-trivial logic.
+
+## 2. Simplicity First
+
+- Implement the absolute minimum code that solves the problem. Nothing
+  speculative.
+- No single-use abstractions, premature factories, or unused configurability.
+- If a task can be done cleanly in 20 lines without adding a dependency or
+  complex pattern, don't write 100 lines.
+- Test question: *"Would a senior developer ask why didn't you just do X?"*
+
+## 3. Surgical Changes
+
+- Touch only what was explicitly requested.
+- Do NOT refactor adjacent files, do NOT reformat unrelated code, and do NOT
+  delete "dead" code unless told to do so (point it out instead).
+- Respect and match the existing codebase style, naming conventions, and file
+  structure.
+- Every line in the git diff must trace directly back to the prompt.
+
+## 4. Goal-Driven Execution
+
+- Define clear success criteria before writing code (e.g., a specific test
+  passing, command output, or verified behavior).
+- Test-first bias: when fixing a bug, write a failing test first, then fix the
+  code until it passes.
+- Loop and verify yourself before declaring the task done.
+
+# Project
+
+## Language
+
+Reply in the language the prompt is written in. Everything committed to the
+repo — code, comments, commit messages, README, docs — is in English.
+
+## Answers
+
+Lead with the answer, and keep it short. Recommend one path once a choice is
+clear; enumerate alternatives only in the case §1 describes. Verify versions,
+flags and APIs against the installed tooling or the official docs before
+stating them — do not answer from memory.
+
+## Documentation
+
+Project knowledge lives in [`docs/`](docs/). It is not loaded automatically —
+read what is relevant there before acting, and update it in the same change
+when something makes it stale.
