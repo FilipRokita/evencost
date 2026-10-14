@@ -3,7 +3,19 @@
 How the development environment is put together, and the traps in it.
 
 Everything runs inside a dev container — open the repo in VS Code and choose
-**Dev Containers: Reopen in Container**.
+**Dev Containers: Reopen in Container**, once the env files below exist.
+
+## Before you start
+
+Neither env file is committed, so create both from the examples:
+
+```bash
+cp .devcontainer/.env.example .devcontainer/.env   # required, fill in the keys
+cp .env.example .env                               # for the app
+```
+
+The container will not start without `.devcontainer/.env`, which is injected with
+`runArgs --env-file`.
 
 ## Two env files
 
@@ -14,13 +26,14 @@ Configuration is split by who consumes it:
 | `.devcontainer/.env` | `ANTHROPIC_AUTH_TOKEN`, `CONTEXT7_API_KEY` | Claude Code, MCP servers |
 | `.env` | `DATABASE_URL`, app secrets | the application |
 
-The split exists so the application process never carries the agent's
-credentials — a token it has no use for and could leak through a log or a stack
-trace. Both files are gitignored, with committed `.env.example` counterparts.
+The split gives each consumer its own file to read, and keeps the credentials out
+of git. Both files are gitignored, with committed `.env.example` counterparts.
 
 `.devcontainer/.env` reaches the container through `runArgs --env-file`, whose
 path resolves relative to the repo root. The application reads its own root
-`.env` through Next.js and needs no `--env-file` at all.
+`.env` through Next.js and needs no `--env-file` at all. `--env-file` still sets
+its variables for the whole container, so the app inherits the agent's
+credentials too.
 
 Settings that are not secret do not belong in either file — they go in
 [`.claude/settings.json`](../.claude/settings.json), which is committed.

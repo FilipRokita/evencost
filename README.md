@@ -33,6 +33,9 @@ Postgres can be swapped for a hosted one (Neon, Supabase) without code changes.
 Everything runs inside the dev container. Open the repo in VS Code and choose
 **Dev Containers: Reopen in Container**.
 
+First create both env files from their examples — see
+[Environment files](#environment-files).
+
 On container creation, `.devcontainer/setup.sh` runs:
 
 - `.devcontainer/db-setup.sh` — installs PostgreSQL 17 from Debian's own repos,
