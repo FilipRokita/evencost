@@ -1,6 +1,7 @@
 # 💸 EvenCost
 
-A web app for splitting shared expenses in groups — trips, flatmates, projects.
+Split shared expenses in a group — a trip, a flat, a project. Everyone adds what
+they paid, and EvenCost works out who owes whom and the simplest way to settle.
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
@@ -13,66 +14,80 @@ A web app for splitting shared expenses in groups — trips, flatmates, projects
 
 ## ✨ What it does
 
-1. Create a group and invite people
-2. Add an expense and choose how to split it — equally, by exact amounts, or by percentage
-3. The app computes who owes whom
-4. It shows the **minimal set of transfers** needed to settle up, instead of everyone paying everyone back
-5. Mark a debt as settled and it disappears
+1. **Create a group** — a name, a description, one currency
+2. **Invite people** with a single link; they sign up and land straight in
+3. **Add expenses** — who paid, how much, and how to split it: equally, by exact
+   amounts, or by percentage
+4. **Watch the balances** update as expenses land
+5. **Settle up** — EvenCost suggests an optimized set of transfers that clears
+   the whole group, or you record a partial payment instead
+6. **Everyone at zero** — done
+
+Settlement is a recorded transfer, not a checkbox, so paying back half of what
+you owe works properly.
+
+**Mobile-first, dark by default.** Built for the phone in your pocket at the end
+of the trip — bottom navigation, sheets instead of forms, and amounts you can
+read at a glance.
 
 ## 🧱 Stack
 
 | Layer | Technology |
 | :--- | :--- |
-| Frontend | Next.js (App Router), Tailwind, shadcn/ui |
+| Frontend | Next.js 16 (App Router), Tailwind CSS 4, shadcn/ui |
 | Backend | Server Actions + Route Handlers |
-| Database | PostgreSQL 17 — installed locally in the dev container |
+| Database | PostgreSQL 17 — local to the dev container, any hosted Postgres in production |
 | ORM | Drizzle |
-| Auth | Auth.js |
+| Auth | Better Auth |
 | Dev environment | Dev Container (VS Code) |
 
-The app connects to the database through a single `DATABASE_URL`, so the local
-Postgres can be swapped for a hosted one (Neon, Supabase) without code changes.
+The app reads its database from a single environment variable, so swapping the
+local Postgres for a hosted one (Neon, Supabase) is a config change — not a code
+change.
 
-## 🚀 Development setup
+## 🚀 Run it locally
 
-Everything runs inside the dev container. Open the repo in VS Code and choose
-**Dev Containers: Reopen in Container**.
+Everything runs inside the dev container; nothing is installed on your machine.
 
-First create both env files from their examples — see
-[Environment files](#-environment-files).
+1. **Open the repo in the container.** In VS Code, run *Dev Containers: Reopen in
+   Container*. On first creation this installs PostgreSQL 17, starts the
+   cluster, creates the local `evencost` role and database, and runs
+   `npm install`.
 
-On container creation, `.devcontainer/setup.sh` runs:
+2. **Create the env files** — both are gitignored, so a fresh clone has neither:
 
-- `.devcontainer/db-setup.sh` — installs PostgreSQL 17 from Debian's own repos,
-  starts the cluster, and creates the local `evencost` role and database
-- `yarn install`
+   ```bash
+   cp .env.example .env
+   cp .devcontainer/.env.example .devcontainer/.env
+   ```
 
-### 🔐 Environment files
+   Fill in the values — the example files say what goes where, and
+   [Dev environment](docs/dev-environment.md#two-env-files) explains why.
 
-Secrets are split by who needs them:
+3. **(Optional) Seed demo data** — `npm run db:seed` fills the database with two
+   demo groups to click through. Skip it to start empty. Sign in with
+   `filip@evencost.test` / `devpassword`. ⏳ *Not yet — arrives with the database
+   stage.* The database lives in the container layer, so it is wiped on every
+   rebuild — re-run the seed to get it back.
 
-| File | Holds | Read by |
-| :--- | :--- | :--- |
-| `.devcontainer/.env` | `ANTHROPIC_*`, `CONTEXT7_API_KEY` | Claude Code, MCP servers |
-| `.env` | `DATABASE_URL`, app secrets | the application |
+4. **Start the dev server** — `npm run dev`, then open
+   [http://localhost:3000](http://localhost:3000). ⏳ *Not yet — arrives with the
+   scaffold.*
 
-Both are gitignored; matching `.env.example` files are committed.
-
-> ⚠️ The local database lives in the container layer, so **its data is wiped on
-> every rebuild**.
+Dependencies and database migrations are not on this list on purpose — the
+container runs them, on creation and on every start.
 
 ## 🗺️ Roadmap
 
-- [ ] Scaffold Next.js
+- [ ] Scaffold Next.js + a documented getting-started path
 - [ ] Drizzle schema + migrations
+- [ ] Domain core — splits, balances, netting — with unit and property tests
 - [ ] Auth
-- [ ] Groups and members
-- [ ] Expenses with splits
-- [ ] Balances
-- [ ] Netting — the minimal-transfer algorithm, documented in [`docs/`](docs/)
+- [ ] Groups and invites
+- [ ] Expenses
+- [ ] Settlement
+- [ ] Deploy
 
 ## 📚 Documentation
 
-Anything that isn't in this file lives in [`docs/`](docs/) — start with
-[Repo layout](docs/repo-layout.md) to find your way around, then
-[Dev environment](docs/dev-environment.md).
+Anything that isn't in this file lives in [`docs/`](docs/).

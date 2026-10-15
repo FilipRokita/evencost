@@ -5,4 +5,4 @@ set -e
 bash ".devcontainer/db-setup.sh"
 
 # Install project dependencies
-yarn install
+npm install

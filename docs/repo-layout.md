@@ -15,7 +15,7 @@ inside a folder is that folder's business, not this file's.
 | [`.env.example`](../.env.example) | Template for the application's `.env`. Copy it before the first run. |
 | [`.mcp.json`](../.mcp.json) | MCP servers for Claude Code — currently Context7, for live library docs. |
 | [`.claude/settings.json`](../.claude/settings.json) | Claude Code configuration: which provider and model answer. Not a secret, so it is committed. |
-| [`yarn.lock`](../yarn.lock) | Dependency lockfile. Empty until the app is scaffolded. |
+| `package-lock.json` | Dependency lockfile — committed, so installs are reproducible. Arrives with the app scaffold; until then there is nothing to lock. |
 
 ## Gitignored
 

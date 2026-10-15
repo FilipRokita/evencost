@@ -84,7 +84,7 @@ On creation, `.devcontainer/setup.sh` runs:
 
 - `.devcontainer/db-setup.sh` — installs PostgreSQL 17 from Debian's own repos,
   starts the cluster, creates the local `evencost` role and database
-- `yarn install`
+- `npm install`
 
 `.devcontainer/db-start.sh` owns starting the cluster. The Debian package creates
 it but leaves it stopped, because nothing in a container runs the init system
