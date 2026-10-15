@@ -74,3 +74,18 @@ Nothing in it is part of the product.
 
 Implementation plans are written to `.claude/plans/`, which is gitignored and
 local to one machine. How we plan is set out here as we settle on it.
+
+**A plan is a folder, and everything for it goes inside.** One folder per plan —
+the plan plus anything it produces:
+
+```
+.claude/plans/evencost-v1/
+  plan.md                 # the plan
+  prototype.html          # the mock it describes
+  stack-research.json     # verified facts it cites
+```
+
+Name it for what it delivers (`evencost-v1`, not `implementation-plan`), so the
+next plan gets its own folder. Planning never scatters across the repo: a
+prototype that belongs to a plan lives in that plan's folder. `dev-only/` is
+scratch space — for prototypes tied to no plan.
