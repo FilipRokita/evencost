@@ -26,9 +26,10 @@ they paid, and EvenCost works out who owes whom and the simplest way to settle.
 Settlement is a recorded transfer, not a checkbox, so paying back half of what
 you owe works properly.
 
-**Mobile-first, dark by default.** Built for the phone in your pocket at the end
-of the trip — bottom navigation, sheets instead of forms, and amounts you can
-read at a glance.
+**Dark by default, built phone-first — but not phone-only.** On a phone it is
+bottom navigation and sheets, made for the end of the trip. Open it on a laptop
+and it becomes a two-column layout: expenses on the left, balances and settle-up
+on the right.
 
 ## 🧱 Stack
 

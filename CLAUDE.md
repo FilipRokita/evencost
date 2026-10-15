@@ -44,22 +44,28 @@ the human can verify.
 ## Language
 
 Reply in the language the prompt is written in. Everything committed to the
-repo — code, comments, commit messages, README, docs — is in English.
+repo, whether code, comments, commit messages, README or docs, is in English.
 
 ## Answers
 
 Lead with the answer, and keep it short. Recommend one path once a choice is
 clear; enumerate alternatives only in the case §1 describes. Verify versions,
 flags and APIs against the installed tooling or the official docs before
-stating them — do not answer from memory.
+stating them. Do not answer from memory.
 
-Break it up. Short paragraphs, lists, tables — one idea per line. Never a wall
-of text to wade through.
+Break it up. Short paragraphs, lists, tables. One idea per line. Never a wall of
+text to wade through.
+
+## Copy
+
+Never use an em dash in text a user will read: UI labels, headings, landing copy,
+error messages, emails. End the sentence and start a new one, or use a comma or
+colon. Docs, README, code comments and commit messages are fine as they are.
 
 ## Documentation
 
 [`README.md`](README.md) is imported at the top of this file, so it is always in
-context — keep it current. Everything else lives in [`docs/`](docs/), which is
+context. Keep it current. Everything else lives in [`docs/`](docs/), which is
 **not** loaded automatically: read what is relevant before acting there.
 
 Whichever one a change makes stale, update it in the same change rather than
@@ -67,15 +73,15 @@ later.
 
 ## Dev only
 
-`dev-only/` is a gitignored scratch space — prototypes, mocks, experiments.
+`dev-only/` is a gitignored scratch space for prototypes, mocks and experiments.
 Nothing in it is part of the product.
 
 ## Planning
 
-Plans live in `.claude/plans/` — gitignored, local to one machine. One plan is
+Plans live in `.claude/plans/`, gitignored and local to one machine. One plan is
 one entry: a single `.md` when that's all it needs, a folder (`plan.md` plus its
 attachments) when it produces a mock, research or anything else. Name it for the
-work it does — `invite-expiry`, not `implementation-plan` — so the next plan
+work it does, `invite-expiry` rather than `implementation-plan`, so the next plan
 gets its own entry instead of overwriting this one.
 
 Whatever a plan produces stays in its entry. `dev-only/` is scratch space for

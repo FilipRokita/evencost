@@ -28,7 +28,8 @@
 		"extensions": [
 			"anthropic.claude-code",
 			"mtxr.sqltools",
-			"mtxr.sqltools-driver-pg"
+			"mtxr.sqltools-driver-pg",
+			"ritwickdey.LiveServer"
 		]
     }
   },
