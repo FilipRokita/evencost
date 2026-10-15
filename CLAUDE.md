@@ -75,20 +75,20 @@ Nothing in it is part of the product.
 Implementation plans are written to `.claude/plans/`, which is gitignored and
 local to one machine. How we plan is set out here as we settle on it.
 
-**One plan, one entry, named for what it delivers.** A plan that fits in a
+**One plan, one entry, named for the work it does.** A plan that fits in a
 single file stays a file; one that produces attachments becomes a folder:
 
 ```
-.claude/plans/billing-fix.md        # simple — the plan alone is enough
-.claude/plans/evencost-v1/          # has things attached to it
+.claude/plans/invite-expiry.md      # simple — the plan alone is enough
+.claude/plans/v1-full-app/          # has things attached to it
   plan.md
   prototype.html
   stack-research.json
 ```
 
-Name it `evencost-v1`, not `implementation-plan` — so the next plan gets its own
-entry instead of overwriting this one. Don't build a folder for a plan with
-nothing to put in it.
+`invite-expiry`, not `implementation-plan` or `plan-2` — a short name saying what
+the plan is for. The next plan then gets its own entry instead of overwriting
+this one. Don't build a folder for a plan with nothing to put in it.
 
 Everything a plan produces goes in its entry, never elsewhere in the repo: a
 prototype that belongs to a plan lives with it. `dev-only/` is scratch space —
