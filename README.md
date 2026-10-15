@@ -74,4 +74,5 @@ Both are gitignored; matching `.env.example` files are committed.
 ## 📚 Documentation
 
 Anything that isn't in this file lives in [`docs/`](docs/) — start with
+[Repo layout](docs/repo-layout.md) to find your way around, then
 [Dev environment](docs/dev-environment.md).
