@@ -1,6 +1,8 @@
 {
   "env": {
     "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
-    "ANTHROPIC_MODEL": "deepseek-flash[1m]"
+    "ANTHROPIC_MODEL": "deepseek-flash[1m]",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-flash",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "786432"
   }
 }
