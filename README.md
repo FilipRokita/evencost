@@ -25,10 +25,17 @@ and no chasing people for small amounts.
 
 ## 📸 Screenshots
 
-| View | Phone | Desktop |
-| :--- | :---: | :---: |
-| **Dashboard** | ![Dashboard on a phone](docs/screenshots/dashboard-phone.png) | ![Dashboard on desktop](docs/screenshots/dashboard-desktop.png) |
-| **Group** | ![Group on a phone](docs/screenshots/group-phone.png) | ![Group on desktop](docs/screenshots/group-desktop.png) |
+### Phone
+
+| Dashboard | Group |
+| :---: | :---: |
+| <img src="docs/screenshots/dashboard-phone.png" alt="EvenCost dashboard on a phone" width="280"> | <img src="docs/screenshots/group-phone.png" alt="EvenCost group on a phone" width="280"> |
+
+### Desktop
+
+![EvenCost dashboard on desktop](docs/screenshots/dashboard-desktop.png)
+
+![EvenCost group on desktop](docs/screenshots/group-desktop.png)
 
 ## ✨ What it does
 
