@@ -14,6 +14,7 @@ and no chasing people for small amounts.
 
 ## 📖 Table of contents
 
+- [Screenshots](#screenshots)
 - [What it does](#what-it-does)
 - [Stack](#stack)
 - [How it's built](#how-its-built)
@@ -21,6 +22,13 @@ and no chasing people for small amounts.
 - [Run it on a host](#run-it-on-a-host)
 - [Documentation](#documentation)
 - [License](#license)
+
+## 📸 Screenshots
+
+| View | Phone | Desktop |
+| :--- | :---: | :---: |
+| **Dashboard** | ![Dashboard on a phone](docs/screenshots/dashboard-phone.png) | ![Dashboard on desktop](docs/screenshots/dashboard-desktop.png) |
+| **Group** | ![Group on a phone](docs/screenshots/group-phone.png) | ![Group on desktop](docs/screenshots/group-desktop.png) |
 
 ## ✨ What it does
 
