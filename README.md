@@ -82,7 +82,7 @@ migrate.
 - [x] Scaffold Next.js + a documented getting-started path
 - [x] Drizzle schema + migrations
 - [x] Domain core — splits, balances, netting — with unit and property tests
-- [ ] Auth
+- [x] Auth
 - [ ] Groups and invites
 - [ ] Expenses
 - [ ] Settlement

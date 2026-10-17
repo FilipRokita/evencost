@@ -16,7 +16,10 @@ export function hashPassword(password: string): Promise<string> {
   return hash(password, OPTIONS);
 }
 
-/** The parameters are stored inside the hash, so verification needs no options. */
-export function verifyPassword(hashed: string, password: string): Promise<boolean> {
-  return verify(hashed, password);
+/**
+ * The parameters are stored inside the hash, so verification needs no options.
+ * The argument shape is the one Better Auth's `password` option expects.
+ */
+export function verifyPassword({ password, hash }: { password: string; hash: string }): Promise<boolean> {
+  return verify(hash, password);
 }

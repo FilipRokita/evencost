@@ -1,5 +1,7 @@
 import { CATEGORIES } from "@/domain/categories";
+import { sql } from "drizzle-orm";
 import {
+  boolean,
   date,
   foreignKey,
   index,
@@ -23,18 +25,101 @@ const createdAt = timestamp("created_at", { withTimezone: true, precision: 6 })
   .notNull()
   .defaultNow();
 
+/**
+ * Better Auth's user model, mapped onto our table: its `name` is our
+ * `display_name`, and `avatar_color` is an extra field of ours. The password
+ * hash is not here: Better Auth stores it on the credential row in `accounts`,
+ * which is what makes one user able to have several sign-in methods later.
+ */
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: uuid("id")
+    .primaryKey()
+    .default(sql`pg_catalog.gen_random_uuid()`),
+  displayName: text("display_name").notNull(),
   // Login only. Never shown to anyone else.
   email: text("email").notNull().unique(),
-  passwordHash: text("password_hash").notNull(),
-  // Shown everywhere. Deliberately not unique: invites arrive by link, so nobody
-  // is ever looked up by name (rule 17).
-  displayName: text("display_name").notNull(),
-  // Assigned once at signup and never derived from list position (rule 8b).
-  avatarColor: text("avatar_color").notNull(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  image: text("image"),
+  // Assigned once at signup from the validated 8-hue palette, never derived
+  // from list position (rule 8b).
+  avatarColor: text("avatar_color").notNull().default("teal"),
   createdAt,
+  updatedAt: timestamp("updated_at", { withTimezone: true, precision: 6 })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
+
+// --- Better Auth's own tables. Names are the library's defaults on purpose: they
+// belong to it, not to the domain.
+
+export const accounts = pgTable(
+  "account",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .default(sql`pg_catalog.gen_random_uuid()`),
+    accountId: text("account_id").notNull(),
+    providerId: text("provider_id").notNull(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // The Argon2id hash for providerId = "credential".
+    password: text("password"),
+    accessToken: text("access_token"),
+    refreshToken: text("refresh_token"),
+    idToken: text("id_token"),
+    accessTokenExpiresAt: timestamp("access_token_expires_at", { withTimezone: true }),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { withTimezone: true }),
+    scope: text("scope"),
+    createdAt,
+    updatedAt: timestamp("updated_at", { withTimezone: true, precision: 6 })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [index("account_user_idx").on(t.userId)],
+);
+
+export const sessions = pgTable(
+  "session",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .default(sql`pg_catalog.gen_random_uuid()`),
+    expiresAt: timestamp("expires_at", { withTimezone: true, precision: 6 }).notNull(),
+    token: text("token").notNull().unique(),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt,
+    updatedAt: timestamp("updated_at", { withTimezone: true, precision: 6 })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [index("session_user_idx").on(t.userId)],
+);
+
+export const verifications = pgTable(
+  "verification",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .default(sql`pg_catalog.gen_random_uuid()`),
+    identifier: text("identifier").notNull(),
+    value: text("value").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true, precision: 6 }).notNull(),
+    createdAt,
+    updatedAt: timestamp("updated_at", { withTimezone: true, precision: 6 })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [index("verification_identifier_idx").on(t.identifier)],
+);
 
 export const groups = pgTable("groups", {
   id: uuid("id").primaryKey().defaultRandom(),

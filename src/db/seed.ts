@@ -6,8 +6,9 @@
  * duplicating groups.
  */
 import { db } from "./index";
+import { eq } from "drizzle-orm";
 import { expenseSplits, expenses, groups, inviteLinks, memberships, settlements, users } from "./schema";
-import { hashPassword } from "../lib/password";
+import { auth } from "../lib/auth";
 
 const PASSWORD = "devpassword";
 
@@ -27,20 +28,20 @@ async function main() {
     await db.delete(table);
   }
 
-  // One hash per account, so the stored data looks like real data: identical
-  // hashes across users would mean one shared salt.
-  const passwordHashes = await Promise.all(PEOPLE.map(() => hashPassword(PASSWORD)));
-  const inserted = await db
-    .insert(users)
-    .values(
-      PEOPLE.map((p, i) => ({
-        email: p.email,
-        displayName: p.displayName,
-        avatarColor: p.avatarColor,
-        passwordHash: passwordHashes[i],
-      })),
-    )
-    .returning({ id: users.id, email: users.email });
+  // Created through Better Auth rather than by inserting rows: it owns the
+  // password account row, the Argon2id hash and the id generation, so the demo
+  // data is shaped exactly the way the app creates real users.
+  const inserted: { id: string; email: string }[] = [];
+  for (const person of PEOPLE) {
+    const result = await auth.api.signUpEmail({
+      body: { email: person.email, password: PASSWORD, name: person.displayName },
+    });
+    await db
+      .update(users)
+      .set({ avatarColor: person.avatarColor })
+      .where(eq(users.id, result.user.id));
+    inserted.push({ id: result.user.id, email: person.email });
+  }
 
   const id = (email: string) => {
     const user = inserted.find((u) => u.email === email);

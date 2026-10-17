@@ -1,12 +1,14 @@
 # EvenCost data model
 
-The seven tables and how they relate. The Drizzle schema is the source of truth
+The ten tables and how they relate. The Drizzle schema is the source of truth
 for columns; this file exists for the one thing it does not show at a glance,
 which is the shape of the relations. Rendered by GitHub and by the VS Code
 Markdown preview.
 
 ```mermaid
 erDiagram
+    users ||--o{ session : signs_in
+    users ||--o{ account : signs_in_with
     users ||--o{ groups : owns
     users ||--o{ memberships : joins
     groups ||--o{ memberships : has
@@ -71,6 +73,32 @@ erDiagram
         integer amountMinor "source of truth for balances"
     }
 
+    account {
+        uuid id PK
+        text accountId
+        text providerId "credential for email and password"
+        uuid userId FK
+        text password "Argon2id hash, only for credential rows"
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    session {
+        uuid id PK
+        text token UK
+        timestamp expiresAt
+        uuid userId FK
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    verification {
+        uuid id PK
+        text identifier
+        text value
+        timestamp expiresAt
+    }
+
     settlements {
         uuid id PK
         uuid groupId FK
@@ -82,6 +110,11 @@ erDiagram
         timestamp createdAt
     }
 ```
+
+The `account`, `session` and `verification` tables belong to Better Auth, not
+to the domain, and keep the library's own shape. The password hash lives on the
+credential row in `accounts`, which is what lets one user have several sign-in
+methods later.
 
 ## The four columns that carry behaviour
 
