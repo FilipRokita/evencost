@@ -7,7 +7,7 @@ inside a folder is that folder's business, not this file's.
 
 | Path | What it is |
 | :--- | :--- |
-| [`README.md`](../README.md) | Project overview — what EvenCost does, the stack, setup, roadmap. |
+| [`README.md`](../README.md) | Project overview — what EvenCost does, the stack, setup and deployment. |
 | [`CLAUDE.md`](../CLAUDE.md) | Instructions for Claude Code. Imports `README.md`, so both are always in the agent's context. |
 | [`AGENTS.md`](../AGENTS.md) | Written and re-added by `next dev`: a pointer that this Next version ships its docs in `node_modules`. Ignoring it only recreates the file. |
 | [`src/`](../src/) | Application code — see [Project structure](#project-structure) below. |

@@ -118,17 +118,6 @@ commented out for one or the other.
 serverless host protects nothing. A shared Upstash store is not built yet, so
 production sign-in is effectively unthrottled until it is.
 
-## 🗺️ Roadmap
-
-- [x] Scaffold Next.js + a documented getting-started path
-- [x] Drizzle schema + migrations
-- [x] Domain core. Splits, balances, netting. With unit and property tests
-- [x] Auth
-- [x] Groups and invites
-- [x] Expenses
-- [x] Settlement
-- [ ] Deploy
-
 ## 📚 Documentation
 
 Anything that isn't in this file lives in [`docs/`](docs/).
