@@ -20,6 +20,7 @@ and no chasing people for small amounts.
 - [Run it locally](#run-it-locally)
 - [Run it on a host](#run-it-on-a-host)
 - [Documentation](#documentation)
+- [License](#license)
 
 ## ✨ What it does
 
@@ -130,3 +131,7 @@ production sign-in is effectively unthrottled until it is.
 ## 📚 Documentation
 
 Anything that isn't in this file lives in [`docs/`](docs/).
+
+## 📄 License
+
+Released under the [MIT License](LICENSE).
