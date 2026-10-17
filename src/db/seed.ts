@@ -12,6 +12,11 @@ import { auth } from "../lib/auth";
 
 const PASSWORD = "devpassword";
 
+/** 30 days out, so the demo invite links are usable whenever the seed runs. */
+function inviteExpiry() {
+  return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+}
+
 const PEOPLE = [
   { email: "filip@evencost.test", displayName: "Filip", avatarColor: "teal" },
   { email: "ania@evencost.test", displayName: "Ania", avatarColor: "amber" },
@@ -73,7 +78,7 @@ async function main() {
   await db.insert(inviteLinks).values({
     groupId: trip.id,
     token: "x7k2mp9q4wz1r",
-    expiresAt: new Date("2026-04-08T00:00:00Z"),
+    expiresAt: inviteExpiry(),
   });
 
   const tripExpenses = [
@@ -145,7 +150,7 @@ async function main() {
   await db.insert(inviteLinks).values({
     groupId: flat.id,
     token: "a9q4wz1r8t6y",
-    expiresAt: new Date("2026-11-01T00:00:00Z"),
+    expiresAt: inviteExpiry(),
   });
 
   const flatExpenses = [

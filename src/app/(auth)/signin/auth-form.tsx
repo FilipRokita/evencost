@@ -9,7 +9,7 @@ import type { FormState } from "@/lib/form-state";
 
 type Mode = "signup" | "signin";
 
-export function AuthForm() {
+export function AuthForm({ callbackUrl }: { callbackUrl?: string }) {
   const [mode, setMode] = useState<Mode>("signup");
   const [state, formAction, pending] = useActionState<FormState, FormData>(authAction, {});
   const signup = mode === "signup";
@@ -42,6 +42,7 @@ export function AuthForm() {
 
       <form action={formAction} className="space-y-4">
         <input type="hidden" name="mode" value={mode} />
+        {callbackUrl && <input type="hidden" name="callbackUrl" value={callbackUrl} />}
 
         {signup && (
           <div className="space-y-2">

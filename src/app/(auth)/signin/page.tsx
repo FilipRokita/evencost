@@ -9,7 +9,8 @@ import { AuthForm } from "./auth-form";
 // visitor is already signed in would flash the wrong screen.
 export const instant = false;
 
-export default async function SignInPage() {
+export default async function SignInPage({ searchParams }: PageProps<"/signin">) {
+  const { callbackUrl } = await searchParams;
   // Reading the session needs a request, so this page cannot be prerendered.
   await connection();
   // Already signed in: nothing to do here.
@@ -29,7 +30,7 @@ export default async function SignInPage() {
         One account, every group you&apos;ll ever join.
       </p>
 
-      <AuthForm />
+      <AuthForm callbackUrl={typeof callbackUrl === "string" ? callbackUrl : undefined} />
     </main>
   );
 }

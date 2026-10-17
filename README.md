@@ -83,7 +83,7 @@ migrate.
 - [x] Drizzle schema + migrations
 - [x] Domain core — splits, balances, netting — with unit and property tests
 - [x] Auth
-- [ ] Groups and invites
+- [x] Groups and invites
 - [ ] Expenses
 - [ ] Settlement
 - [ ] Deploy

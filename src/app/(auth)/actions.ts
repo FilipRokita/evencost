@@ -26,6 +26,15 @@ const registration = z.object({
 
 const LIMIT = { limit: 5, windowMs: 60_000 };
 
+/**
+ * Where to go after signing in. Only same-origin paths are accepted: "//evil.com"
+ * and absolute URLs are exactly the open redirect this guards against.
+ */
+function destination(formData: FormData): string {
+  const value = field(formData, "callbackUrl");
+  return value.startsWith("/") && !value.startsWith("//") ? value : "/dashboard";
+}
+
 function field(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
@@ -51,7 +60,7 @@ export async function signInAction(_prev: FormState, formData: FormData): Promis
     return { error: "Invalid email or password." };
   }
 
-  redirect("/dashboard");
+  redirect(destination(formData));
 }
 
 export async function signUpAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -85,7 +94,7 @@ export async function signUpAction(_prev: FormState, formData: FormData): Promis
   // position would repaint everyone when the list changes.
   await db.update(users).set({ avatarColor: pickAvatarColor() }).where(eq(users.id, userId));
 
-  redirect("/dashboard");
+  redirect(destination(formData));
 }
 
 /** The form decides which of the two to run from a hidden field. */
