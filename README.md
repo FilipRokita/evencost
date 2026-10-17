@@ -54,7 +54,7 @@ file that proves it.
 | | |
 | :--- | :--- |
 | **Business rules know nothing about the framework** | Splits, balances, netting and permissions are plain TypeScript with no Next.js, React or database imports. [src/domain/](src/domain/) |
-| **Every action authorizes itself** | A Server Action is a public POST endpoint, so each one checks the session, validates its input and re-checks ownership. Hiding a button is never the boundary. [groups/actions.ts](src/app/(app)/groups/actions.ts) |
+| **Every action authorizes itself** | A Server Action is a public POST endpoint, so each one checks the session, validates its input and re-checks ownership. Hiding a button is never the boundary. [groups/actions.ts](<src/app/(app)/groups/actions.ts>) |
 | **Money is never a float** | Integer minor units everywhere; the form and the server run the same split function, and the server re-checks the sum before storing. [splits.ts](src/domain/splits.ts) |
 | **Deletes are soft** | Expenses, memberships, settlements and groups are marked, never removed, so history and balances stay correct. [schema.ts](src/db/schema.ts) |
 | **Tests run the real arithmetic** | Property tests over random amounts and party sizes, plus an integration test that races two settle-ups against a real Postgres. [src/domain/](src/domain/) · [settle.test.ts](src/lib/settle.test.ts) |
@@ -91,6 +91,34 @@ Everything runs inside the dev container; nothing is installed on your machine.
 Dependencies are not on this list on purpose: the container runs `npm install`
 itself. Migrations join it at the database stage, once there is something to
 migrate.
+
+## ☁️ Run it on a host
+
+The same app and the same code. Only the environment changes, and no code is
+commented out for one or the other.
+
+1. **Get a Postgres.** Any host works (Neon, Supabase, a VPS). Copy **two**
+   connection strings: the pooled one and the direct one.
+
+2. **Create the project** on your host and point it at this repository.
+
+3. **Set five variables** in the host's dashboard:
+
+   | Variable | What it is |
+   | :--- | :--- |
+   | `DATABASE_URL` | the **pooled** string. Serverless opens a connection per instance, so the direct one exhausts Postgres. |
+   | `DIRECT_URL` | the **direct** string. Migrations only: a transaction-mode pooler cannot run them. |
+   | `BETTER_AUTH_SECRET` | 32+ characters of entropy. `openssl rand -base64 32`. |
+   | `BETTER_AUTH_URL` | the public URL of the deployment. |
+   | `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` | `openssl rand -base64 32`. Required once more than one instance serves traffic. |
+
+4. **Deploy.** The build command applies migrations before building, so there is
+   no separate step and nothing to run by hand.
+
+**One caveat worth knowing:** sign-in throttling counts per process, which on a
+serverless host protects nothing. Back it with Upstash Redis, or accept that the
+login endpoint is unthrottled. [.env.example](.env.example) lists the two
+variables.
 
 ## 🗺️ Roadmap
 

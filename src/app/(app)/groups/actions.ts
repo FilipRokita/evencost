@@ -124,3 +124,15 @@ export async function removeMemberAction(groupId: string, userId: string): Promi
 
   revalidatePath(`/groups/${groupId}`);
 }
+
+/** Soft delete: members lose access, the history survives (rule 6). */
+export async function deleteGroupAction(groupId: string): Promise<void> {
+  const session = await requireSession();
+  const group = await getGroupForViewer(groupId, session.user.id);
+  if (!group || group.ownerId !== session.user.id) invalid(groupId);
+
+  await db.update(groups).set({ deletedAt: new Date() }).where(eq(groups.id, groupId));
+
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
+}

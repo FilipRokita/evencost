@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/domain/money";
 import { getActiveInvite, getGroupForViewer, listExpenses, listMembers, listSettlements, loadBalances } from "@/lib/groups";
 import { requireSession } from "@/lib/session";
-import { leaveGroupAction, regenerateInviteAction } from "../actions";
+import { deleteGroupAction, leaveGroupAction, regenerateInviteAction, removeMemberAction } from "../actions";
 import { InvitePanel } from "./invite-panel";
 
 export default async function GroupPage({ params, searchParams }: PageProps<"/groups/[id]">) {
@@ -279,7 +279,44 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
         </>
       )}
 
-      {!isOwner && (
+      <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+        People
+      </p>
+      <div className="space-y-2">
+        {members.map((member) => (
+          <div key={member.id} className={`flex items-center gap-3 rounded-xl border border-border bg-card p-3 ${member.leftAt ? "opacity-55" : ""}`}>
+            <Avatar name={member.displayName} color={member.avatarColor} />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-semibold">
+                {member.displayName}
+                {member.id === session.user.id ? " (you)" : ""}
+                {member.leftAt ? " · left" : ""}
+              </span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">
+                {member.id === group.ownerId ? "Owner" : "Member"}
+              </span>
+            </span>
+            {isOwner && member.id !== session.user.id && !member.leftAt && (
+              <form action={removeMemberAction.bind(null, group.id, member.id)}>
+                <Button type="submit" variant="ghost" size="sm">
+                  Remove
+                </Button>
+              </form>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {isOwner ? (
+        <form action={deleteGroupAction.bind(null, group.id)} className="mt-8">
+          <Button type="submit" variant="destructive" className="w-full">
+            Delete group
+          </Button>
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            It disappears for everyone. As the owner you cannot leave instead.
+          </p>
+        </form>
+      ) : (
         <form action={leaveGroupAction.bind(null, group.id)} className="mt-8">
           <Button type="submit" variant="destructive" className="w-full">
             Leave group

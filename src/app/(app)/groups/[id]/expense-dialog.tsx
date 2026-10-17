@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState, type ReactNode } from "react";
+import { useActionState, useEffect, useMemo, useState, type ReactNode } from "react";
 import { CategoryIcon } from "@/components/category-icon";
 import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
@@ -40,14 +40,15 @@ const MESSAGES: Record<string, string> = {
   "percents-do-not-sum": "The percentages have to add up to 100.",
 };
 
-export function ExpenseDialog({
+/** Mounted fresh on every open, so the action state never leaks between uses. */
+function ExpenseForm({
   groupId,
   currency,
   members,
   viewerId,
   expense,
   canEdit = true,
-  trigger,
+  onDone,
 }: {
   groupId: string;
   currency: string;
@@ -55,12 +56,11 @@ export function ExpenseDialog({
   viewerId: string;
   expense?: EditableExpense;
   canEdit?: boolean;
-  trigger: ReactNode;
+  onDone: () => void;
 }) {
   const editing = Boolean(expense);
   const today = new Date().toISOString().slice(0, 10);
 
-  const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState(expense ? (expense.amountMinor / 100).toFixed(2) : "");
   const [title, setTitle] = useState(expense?.title ?? "");
   const [category, setCategory] = useState<Category>(expense?.category ?? "food");
@@ -79,6 +79,10 @@ export function ExpenseDialog({
   });
 
   const [state, formAction, pending] = useActionState<FormState, FormData>(saveExpenseAction, {});
+
+  useEffect(() => {
+    if (state.success) onDone();
+  }, [state.success, onDone]);
 
   const total = toMinorUnits(amount);
 
@@ -117,9 +121,7 @@ export function ExpenseDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-h-[88dvh] overflow-y-auto">
+    <>
         <DialogHeader>
           <DialogTitle>{editing ? "Edit expense" : "Add expense"}</DialogTitle>
           <DialogDescription>
@@ -343,6 +345,21 @@ export function ExpenseDialog({
             </p>
           </form>
         )}
+    </>
+  );
+}
+
+export function ExpenseDialog({
+  trigger,
+  ...formProps
+}: Omit<React.ComponentProps<typeof ExpenseForm>, "onDone"> & { trigger: ReactNode }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent className="max-h-[88dvh] overflow-y-auto">
+        {open && <ExpenseForm {...formProps} onDone={() => setOpen(false)} />}
       </DialogContent>
     </Dialog>
   );
