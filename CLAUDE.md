@@ -71,6 +71,20 @@ context. Keep it current. Everything else lives in [`docs/`](docs/), which is
 Whichever one a change makes stale, update it in the same change rather than
 later.
 
+## Secrets
+
+Treat the repository and its entire history as public. Before every commit:
+
+- Never commit `.env`, `.devcontainer/.env`, keys, tokens, connection strings
+  with credentials, or personal settings files. Only `.env.example` files with
+  placeholders belong in git.
+- Check `git status` and `git diff` first. Never run a blind `git add -A`.
+- Do not put secret values in code, docs, tests, logs, commit messages, or chat.
+- Keep personal files ignored: `.claude/settings.local.json`, `.claude/plans/`,
+  `dev-only/`.
+- If a secret ever leaks, rotate it first. Removing it from git does not undo
+  the exposure.
+
 ## Dev only
 
 `dev-only/` is a gitignored scratch space for prototypes, mocks and experiments.

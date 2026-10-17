@@ -24,3 +24,4 @@ npm-debug.log*
 # Local-only folders - not part of the repo, described in CLAUDE.md
 dev-only/
 .claude/plans/
+.claude/settings.local.json
