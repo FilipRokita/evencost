@@ -12,6 +12,15 @@ and no chasing people for small amounts.
 ![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-1C1C1C?logo=drizzle&logoColor=C5F74F)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
 
+## 📖 Table of contents
+
+- [What it does](#what-it-does)
+- [Stack](#stack)
+- [How it's built](#how-its-built)
+- [Run it locally](#run-it-locally)
+- [Run it on a host](#run-it-on-a-host)
+- [Documentation](#documentation)
+
 ## ✨ What it does
 
 1. **Create a group.** A name, a description, one currency
