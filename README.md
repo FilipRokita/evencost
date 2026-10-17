@@ -154,3 +154,9 @@ Anything that isn't in this file lives in [`docs/`](docs/).
 ## 📄 License
 
 Released under the [MIT License](LICENSE).
+
+---
+
+> ⚠️ **Beta.** EvenCost is a work in progress. It is provided as is, without
+> warranty. The author is not liable for incorrect balances, missed payments or
+> data loss. Check the numbers before relying on them.
