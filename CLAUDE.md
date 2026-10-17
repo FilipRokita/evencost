@@ -69,7 +69,8 @@ context. Keep it current. Everything else lives in [`docs/`](docs/), which is
 **not** loaded automatically: read what is relevant before acting there.
 
 Whichever one a change makes stale, update it in the same change rather than
-later.
+later. This file is part of that rule too: when a workflow, command, path or
+rule it names changes, update `CLAUDE.md` in the same change.
 
 ## Secrets
 
