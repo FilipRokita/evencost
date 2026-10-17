@@ -4,6 +4,8 @@
   <img src="docs/banner.svg" width="340" alt="EvenCost logo">
 </div>
 
+<br>
+
 <div align="center">
   <img src="https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&amp;logoColor=white" alt="Next.js">
   <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&amp;logoColor=white" alt="TypeScript">
