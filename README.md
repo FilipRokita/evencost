@@ -1,7 +1,7 @@
 # EvenCost
 
 <div align="center">
-  <img src="docs/logo.svg" width="96" alt="EvenCost logo">
+  <img src="docs/banner.svg" width="340" alt="EvenCost logo">
 </div>
 
 <div align="center">

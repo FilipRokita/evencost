@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="96" viewBox="0 0 340 96" role="img" aria-label="EvenCost">
+  <rect width="340" height="96" rx="24" fill="#0b0d10" stroke="#232833" stroke-width="2"/>
+  <g transform="translate(53 16)">
+    <rect width="64" height="64" rx="16" fill="#34d399"/>
+    <svg x="7.04" y="7.04" width="49.92" height="49.92" viewBox="0 0 32 32" fill="none" stroke="#06231a" stroke-width="2.4">
+      <rect x="2" y="8" width="28" height="16" rx="3.4"/>
+      <circle cx="16" cy="16" r="3.6" fill="#06231a" stroke="none"/>
+    </svg>
+  </g>
+  <text x="137" y="60" font-family="Inter, 'Segoe UI', system-ui, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.8" fill="#e8ebf0">EvenCost</text>
+</svg>
