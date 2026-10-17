@@ -1,8 +1,9 @@
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, lt } from "drizzle-orm";
 import { db } from "@/db";
 import { expenseSplits, expenses, groups, inviteLinks, memberships, settlements, users } from "@/db/schema";
 import { computeBalances } from "@/domain/balances";
 import type { MinorUnits } from "@/domain/money";
+import type { Category } from "@/domain/categories";
 
 export type GroupRow = typeof groups.$inferSelect;
 
@@ -122,4 +123,75 @@ export async function getActiveInvite(groupId: string) {
 
   if (!invite || invite.expiresAt.getTime() <= Date.now()) return null;
   return invite;
+}
+
+export type ExpenseListItem = {
+  id: string;
+  title: string;
+  category: Category;
+  amountMinor: number;
+  paidByUserId: string;
+  createdByUserId: string;
+  spentOn: string;
+  deletedAt: Date | null;
+  splits: Record<string, number>;
+};
+
+/**
+ * Most recent first, one page at a time. The cursor is the creation time of the
+ * last row on the page, so a new expense arriving mid-scroll cannot shift the
+ * page and make a row appear twice (rule 15).
+ *
+ * Balances elsewhere always compute over every expense; pagination only limits
+ * what is displayed.
+ */
+export async function listExpenses(
+  groupId: string,
+  options: { limit?: number; before?: Date } = {},
+): Promise<{ items: ExpenseListItem[]; nextCursor: Date | null }> {
+  const limit = options.limit ?? 50;
+
+  const rows = await db
+    .select()
+    .from(expenses)
+    .where(
+      and(
+        eq(expenses.groupId, groupId),
+        options.before ? lt(expenses.createdAt, options.before) : undefined,
+      ),
+    )
+    .orderBy(desc(expenses.createdAt))
+    .limit(limit + 1);
+
+  const hasMore = rows.length > limit;
+  const page = hasMore ? rows.slice(0, limit) : rows;
+
+  if (page.length === 0) return { items: [], nextCursor: null };
+
+  const splitRows = await db
+    .select()
+    .from(expenseSplits)
+    .where(inArray(expenseSplits.expenseId, page.map((row) => row.id)));
+
+  const byExpense = new Map<string, Record<string, number>>();
+  for (const split of splitRows) {
+    const map = byExpense.get(split.expenseId) ?? {};
+    map[split.userId] = split.amountMinor;
+    byExpense.set(split.expenseId, map);
+  }
+
+  return {
+    items: page.map((row) => ({
+      id: row.id,
+      title: row.title,
+      category: row.category,
+      amountMinor: row.amountMinor,
+      paidByUserId: row.paidByUserId,
+      createdByUserId: row.createdByUserId,
+      spentOn: row.spentOn,
+      deletedAt: row.deletedAt,
+      splits: byExpense.get(row.id) ?? {},
+    })),
+    nextCursor: hasMore ? page[page.length - 1].createdAt : null,
+  };
 }

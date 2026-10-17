@@ -84,7 +84,7 @@ migrate.
 - [x] Domain core — splits, balances, netting — with unit and property tests
 - [x] Auth
 - [x] Groups and invites
-- [ ] Expenses
+- [x] Expenses
 - [ ] Settlement
 - [ ] Deploy
 

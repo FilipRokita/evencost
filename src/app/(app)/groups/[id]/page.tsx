@@ -1,16 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
+import { CategoryIcon } from "@/components/category-icon";
+import { canEditExpense } from "@/domain/permissions";
+import { ExpenseDialog } from "./expense-dialog";
 import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/domain/money";
-import { getActiveInvite, getGroupForViewer, listMembers, loadBalances } from "@/lib/groups";
+import { getActiveInvite, getGroupForViewer, listExpenses, listMembers, loadBalances } from "@/lib/groups";
 import { requireSession } from "@/lib/session";
 import { leaveGroupAction, regenerateInviteAction } from "../actions";
 import { InvitePanel } from "./invite-panel";
 
-export default async function GroupPage({ params }: PageProps<"/groups/[id]">) {
+export default async function GroupPage({ params, searchParams }: PageProps<"/groups/[id]">) {
   const { id } = await params;
+  const { before } = await searchParams;
   const session = await requireSession();
 
   const group = await getGroupForViewer(id, session.user.id);
@@ -18,12 +22,18 @@ export default async function GroupPage({ params }: PageProps<"/groups/[id]">) {
   // answer, so the response cannot be used to discover groups (rule 10).
   if (!group) notFound();
 
-  const [members, balances, invite] = await Promise.all([
+  const cursor = typeof before === "string" ? new Date(before) : undefined;
+  const [members, balances, invite, expenses] = await Promise.all([
     listMembers(group.id),
     loadBalances(group.id),
     getActiveInvite(group.id),
+    listExpenses(group.id, { before: cursor && !Number.isNaN(cursor.getTime()) ? cursor : undefined }),
   ]);
   const active = members.filter((member) => member.leftAt === null);
+  const groupView = {
+    ownerId: group.ownerId,
+    members: members.map((member) => ({ userId: member.id, leftAt: member.leftAt })),
+  };
   const isOwner = group.ownerId === session.user.id;
   const inviteUrl = invite
     ? new URL(`/invite/${invite.token}`, process.env.BETTER_AUTH_URL ?? "http://localhost:3000").toString()
@@ -107,14 +117,94 @@ export default async function GroupPage({ params }: PageProps<"/groups/[id]">) {
         })}
       </div>
 
-      <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
-        Expenses
-      </p>
-      <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center">
-        <p className="text-sm text-muted-foreground">
-          Adding expenses lands in the next stage.
-        </p>
+      <div className="mt-8 mb-3 flex items-center justify-between">
+        <span className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+          Expenses
+        </span>
+        <ExpenseDialog
+          groupId={group.id}
+          currency={group.currency}
+          members={active}
+          viewerId={session.user.id}
+          trigger={<Button size="sm">Add expense</Button>}
+        />
       </div>
+
+      {expenses.items.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center">
+          <p className="text-sm text-muted-foreground">No expenses yet. Add the first one.</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {expenses.items.map((expense) => {
+            const payer = members.find((member) => member.id === expense.paidByUserId);
+            const mine = expense.splits[session.user.id] ?? 0;
+            return (
+              <ExpenseDialog
+                key={expense.id}
+                groupId={group.id}
+                currency={group.currency}
+                members={active}
+                viewerId={session.user.id}
+                canEdit={canEditExpense(session.user.id, groupView, expense)}
+                expense={{
+                  id: expense.id,
+                  title: expense.title,
+                  category: expense.category,
+                  amountMinor: expense.amountMinor,
+                  paidByUserId: expense.paidByUserId,
+                  spentOn: expense.spentOn,
+                  splits: expense.splits,
+                }}
+                trigger={
+                  <button
+                    type="button"
+                    className={`flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+                      expense.deletedAt ? "opacity-55" : ""
+                    }`}
+                  >
+                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-secondary text-muted-foreground">
+                      <CategoryIcon category={expense.category} className="size-4" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className={`block truncate text-sm font-semibold ${expense.deletedAt ? "line-through" : ""}`}>
+                        {expense.title}
+                      </span>
+                      <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                        {payer?.displayName ?? "Someone"} paid · {expense.spentOn}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-right">
+                      <span className="block text-sm font-bold tabular-nums">
+                        {formatMoney(expense.amountMinor, group.currency)}
+                      </span>
+                      {expense.deletedAt ? (
+                        <span className="mt-1 inline-block rounded-full bg-secondary px-2 py-0.5 text-[0.65rem] font-semibold text-muted-foreground">
+                          deleted
+                        </span>
+                      ) : mine > 0 && expense.paidByUserId !== session.user.id ? (
+                        <span className="mt-1 inline-block rounded-full bg-destructive/15 px-2 py-0.5 text-[0.65rem] font-bold tabular-nums text-destructive">
+                          you owe {formatMoney(mine, group.currency)}
+                        </span>
+                      ) : null}
+                    </span>
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  </button>
+                }
+              />
+            );
+          })}
+
+          {expenses.nextCursor && (
+            <Link
+              href={`/groups/${group.id}?before=${encodeURIComponent(expenses.nextCursor.toISOString())}`}
+              className="block rounded-xl border border-border bg-card py-2.5 text-center text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Show earlier expenses
+            </Link>
+          )}
+        </div>
+      )}
 
       {!isOwner && (
         <form action={leaveGroupAction.bind(null, group.id)} className="mt-8">
