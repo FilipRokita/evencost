@@ -1,9 +1,25 @@
-# Local secrets - never commit
+# Secrets - never commit. The matching .env.example files are templates and stay
+# tracked, which is why they are re-included at the end.
 .env
+.env.*
+!.env.example
 
-# Dependencies and build artifacts
+# Dependencies and build output
 node_modules
-.next
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Misc
+.DS_Store
+*.pem
+npm-debug.log*
+
+# Hosting
+.vercel
 
 # Local-only folders - not part of the repo, described in CLAUDE.md
 dev-only/

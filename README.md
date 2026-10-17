@@ -9,8 +9,8 @@ they paid, and EvenCost works out who owes whom and the simplest way to settle.
 ![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-1C1C1C?logo=drizzle&logoColor=C5F74F)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
 
-> 🚧 **Early development.** The dev environment is set up; application code has
-> not been started yet.
+> 🚧 **Early development.** The landing is up. Accounts, groups and the rest of
+> the app are being built stage by stage.
 
 ## ✨ What it does
 
@@ -72,15 +72,15 @@ Everything runs inside the dev container; nothing is installed on your machine.
    rebuild — re-run the seed to get it back.
 
 4. **Start the dev server** — `npm run dev`, then open
-   [http://localhost:3000](http://localhost:3000). ⏳ *Not yet — arrives with the
-   scaffold.*
+   [http://localhost:3000](http://localhost:3000).
 
-Dependencies and database migrations are not on this list on purpose — the
-container runs them, on creation and on every start.
+Dependencies are not on this list on purpose: the container runs `npm install`
+itself. Migrations join it at the database stage, once there is something to
+migrate.
 
 ## 🗺️ Roadmap
 
-- [ ] Scaffold Next.js + a documented getting-started path
+- [x] Scaffold Next.js + a documented getting-started path
 - [ ] Drizzle schema + migrations
 - [ ] Domain core — splits, balances, netting — with unit and property tests
 - [ ] Auth
