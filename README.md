@@ -1,16 +1,24 @@
-# 💸 EvenCost
+# EvenCost
+
+<div align="center">
+  <img src="docs/logo.svg" width="96" alt="EvenCost logo">
+</div>
+
+<div align="center">
+  <img src="https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&amp;logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&amp;logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/PostgreSQL_17-4169E1?logo=postgresql&amp;logoColor=white" alt="PostgreSQL 17">
+  <img src="https://img.shields.io/badge/Drizzle_ORM-1C1C1C?logo=drizzle&amp;logoColor=C5F74F" alt="Drizzle ORM">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&amp;logoColor=white" alt="Tailwind CSS">
+</div>
+
+---
 
 Split shared expenses in a group. A trip, a flat, a project, or the place you
 share every month. Everyone adds what they paid, EvenCost keeps the balances
 current, and when it is time to close the books it suggests an optimized set of
 transfers that clears the whole group. No spreadsheets, no mental arithmetic,
 and no chasing people for small amounts.
-
-![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![PostgreSQL 17](https://img.shields.io/badge/PostgreSQL_17-4169E1?logo=postgresql&logoColor=white)
-![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-1C1C1C?logo=drizzle&logoColor=C5F74F)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
 
 ## 📖 Table of contents
 
