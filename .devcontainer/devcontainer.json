@@ -20,7 +20,7 @@
 	"postCreateCommand": "bash .devcontainer/setup.sh",
 
 	// This brings the cluster back up after a plain container restart.
-	"postStartCommand": "bash .devcontainer/db-start.sh",
+	"postStartCommand": "bash .devcontainer/db-start.sh && bash .devcontainer/db-migrate.sh",
 
 	// Configure tool-specific properties.
 	"customizations": {

@@ -67,9 +67,8 @@ Everything runs inside the dev container; nothing is installed on your machine.
 
 3. **(Optional) Seed demo data** — `npm run db:seed` fills the database with two
    demo groups to click through. Skip it to start empty. Sign in with
-   `filip@evencost.test` / `devpassword`. ⏳ *Not yet — arrives with the database
-   stage.* The database lives in the container layer, so it is wiped on every
-   rebuild — re-run the seed to get it back.
+   `filip@evencost.test` / `devpassword`. The database lives in the container
+   layer, so it is wiped on every rebuild — re-run the seed to get it back.
 
 4. **Start the dev server** — `npm run dev`, then open
    [http://localhost:3000](http://localhost:3000).
@@ -81,7 +80,7 @@ migrate.
 ## 🗺️ Roadmap
 
 - [x] Scaffold Next.js + a documented getting-started path
-- [ ] Drizzle schema + migrations
+- [x] Drizzle schema + migrations
 - [ ] Domain core — splits, balances, netting — with unit and property tests
 - [ ] Auth
 - [ ] Groups and invites

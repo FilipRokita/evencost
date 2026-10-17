@@ -23,6 +23,8 @@ inside a folder is that folder's business, not this file's.
 | [`next.config.ts`](../next.config.ts) | Next configuration. Cache Components and the Tailwind Turbopack rule live here. |
 | [`tsconfig.json`](../tsconfig.json) | TypeScript config; `@/*` maps to `./src/*`. |
 | [`eslint.config.mjs`](../eslint.config.mjs) | ESLint 9 flat config. `next lint` no longer exists, so linting is its own command. |
+| [`drizzle/`](../drizzle/) | Generated SQL migrations and their snapshots. Committed, so the schema history is in git. |
+| [`drizzle.config.ts`](../drizzle.config.ts) | drizzle-kit configuration. Migrations connect through `DIRECT_URL`, never the pooled URL. |
 | [`components.json`](../components.json) | shadcn config. Its aliases point inside `src/`, or the CLI writes components to the wrong place. |
 
 ## Gitignored

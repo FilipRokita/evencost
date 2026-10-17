@@ -6,3 +6,6 @@ bash ".devcontainer/db-setup.sh"
 
 # Install project dependencies
 npm install
+
+# Apply any migrations the database stage has produced.
+bash ".devcontainer/db-migrate.sh"
