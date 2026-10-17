@@ -12,6 +12,10 @@
 
 ---
 
+![EvenCost group on desktop and phone](docs/screenshots/showcase-group.png)
+
+---
+
 Split shared expenses in a group. A trip, a flat, a project, or the place you
 share every month. Everyone adds what they paid, EvenCost keeps the balances
 current, and when it is time to close the books it suggests an optimized set of
@@ -20,7 +24,6 @@ and no chasing people for small amounts.
 
 ## 📖 Table of contents
 
-- [Screenshots](#screenshots)
 - [What it does](#what-it-does)
 - [Stack](#stack)
 - [How it's built](#how-its-built)
@@ -28,12 +31,6 @@ and no chasing people for small amounts.
 - [Run it on a host](#run-it-on-a-host)
 - [Documentation](#documentation)
 - [License](#license)
-
-## 📸 Screenshots
-
-![Group on desktop and phone](docs/screenshots/showcase-group.png)
-
-![Dashboard on desktop and phone](docs/screenshots/showcase-dashboard.png)
 
 ## ✨ What it does
 
