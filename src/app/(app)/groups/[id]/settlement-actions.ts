@@ -39,6 +39,7 @@ export async function recordTransfersAction(
   transfers: Transfer[],
 ): Promise<FormState> {
   const session = await requireSession();
+  if (!z.uuid().safeParse(groupId).success) return { error: "That group is not yours." };
   const group = await getGroupForViewer(groupId, session.user.id);
   if (!group) return { error: "That group is not yours." };
   if (transfers.length === 0) return { error: "Pick at least one transfer." };
@@ -68,8 +69,9 @@ export async function recordTransfersAction(
 }
 
 const customSchema = z.object({
-  fromUserId: z.string().min(1, "Pick who paid."),
-  toUserId: z.string().min(1, "Pick who was paid."),
+  groupId: z.uuid("Pick a group."),
+  fromUserId: z.uuid("Pick who paid."),
+  toUserId: z.uuid("Pick who was paid."),
   amount: z.string().min(1, "Enter an amount."),
   note: z.string().trim().max(120, "At most 120 characters."),
 });
@@ -80,17 +82,18 @@ const customSchema = z.object({
  */
 export async function recordTransferAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const session = await requireSession();
-  const groupId = field(formData, "groupId");
-  const group = await getGroupForViewer(groupId, session.user.id);
-  if (!group) return { error: "That group is not yours." };
-
   const parsed = customSchema.safeParse({
+    groupId: field(formData, "groupId"),
     fromUserId: field(formData, "fromUserId"),
     toUserId: field(formData, "toUserId"),
     amount: field(formData, "amount"),
     note: field(formData, "note"),
   });
   if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
+
+  const groupId = parsed.data.groupId;
+  const group = await getGroupForViewer(groupId, session.user.id);
+  if (!group) return { error: "That group is not yours." };
 
   if (parsed.data.fromUserId === parsed.data.toUserId) {
     return { error: "Pick two different people." };
@@ -124,6 +127,7 @@ export async function recordTransferAction(_prev: FormState, formData: FormData)
 /** Owner or the sender, and never twice. History stays (rule 2). */
 export async function reverseSettlementAction(settlementId: string): Promise<void> {
   const session = await requireSession();
+  if (!z.uuid().safeParse(settlementId).success) return;
   const [settlement] = await db
     .select()
     .from(settlements)

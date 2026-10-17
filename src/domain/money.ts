@@ -24,9 +24,14 @@ export function toMinorUnits(input: string): MinorUnits | null {
  * currency. Mixing "PLN 291.60" with "€1,672.30" in one list reads as a bug.
  */
 export function formatMoney(amount: MinorUnits, currency: string): string {
-  return new Intl.NumberFormat("en", {
-    style: "currency",
-    currency,
-    currencyDisplay: "code",
-  }).format(amount / 100);
+  try {
+    return new Intl.NumberFormat("en", {
+      style: "currency",
+      currency,
+      currencyDisplay: "code",
+    }).format(amount / 100);
+  } catch {
+    // A bad row should render oddly, not take the whole group page down.
+    return `${currency} ${(amount / 100).toFixed(2)}`;
+  }
 }

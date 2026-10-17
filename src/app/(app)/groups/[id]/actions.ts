@@ -71,6 +71,7 @@ const MESSAGES: Record<string, string> = {
 export async function saveExpenseAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const session = await requireSession();
   const groupId = field(formData, "groupId");
+  if (!z.uuid().safeParse(groupId).success) return { error: "That group is not yours." };
   const group = await getGroupForViewer(groupId, session.user.id);
   if (!group) return { error: "That group is not yours." };
 
@@ -96,6 +97,9 @@ export async function saveExpenseAction(_prev: FormState, formData: FormData): P
   );
 
   const expenseId = field(formData, "expenseId");
+  if (expenseId && !z.uuid().safeParse(expenseId).success) {
+    return { error: "That expense is not in this group." };
+  }
   const category = parsed.data.category as Category;
 
   // A new expense can only involve active members. An edit may also keep the
@@ -197,6 +201,7 @@ export async function saveExpenseAction(_prev: FormState, formData: FormData): P
 
 export async function deleteExpenseAction(expenseId: string): Promise<void> {
   const session = await requireSession();
+  if (!z.uuid().safeParse(expenseId).success) return;
   const [expense] = await db.select().from(expenses).where(eq(expenses.id, expenseId)).limit(1);
   if (!expense) return;
 

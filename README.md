@@ -42,9 +42,9 @@ balances and people on the right.
 | Auth | Better Auth |
 | Dev environment | Dev Container (VS Code) |
 
-The app reads its database from a single environment variable, so swapping the
-local Postgres for a hosted one (Neon, Supabase) is a config change — not a code
-change.
+At runtime the app uses one database URL; migrations use a second, direct one.
+Swapping the local Postgres for a hosted one (Neon, Supabase) is a config
+change — not a code change.
 
 ## 🔧 How it's built
 

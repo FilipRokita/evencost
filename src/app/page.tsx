@@ -80,20 +80,20 @@ export default function Page() {
   return (
     <div className="mx-auto max-w-5xl px-5 pb-16">
       <nav className="flex items-center gap-4 py-5">
-        <Link href="/" className="flex items-center gap-2 text-base font-extrabold tracking-tight">
+        <Link href="/" className="flex items-center gap-2 text-base font-extrabold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
           <Logo />
           EvenCost
         </Link>
         <div className="ml-auto flex items-center gap-1">
           <Link
             href="/signin?mode=signin"
-            className="rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+            className="rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Log in
           </Link>
           <Link
             href="/signin?mode=signup"
-            className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-[filter] hover:brightness-110"
+            className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-[filter] hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Get started
           </Link>
@@ -127,13 +127,13 @@ export default function Page() {
         <div className="mt-7 flex flex-wrap justify-center gap-2.5">
           <Link
             href="/signin?mode=signup"
-            className="rounded-2xl bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground transition-[filter] hover:brightness-110"
+            className="rounded-2xl bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground transition-[filter] hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Start splitting. It&apos;s free
           </Link>
           <Link
             href="/signin?mode=signin"
-            className="rounded-2xl border border-border bg-secondary px-6 py-3.5 text-base font-semibold transition-colors hover:bg-accent"
+            className="rounded-2xl border border-border bg-secondary px-6 py-3.5 text-base font-semibold transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             I have an account
           </Link>

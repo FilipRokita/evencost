@@ -18,7 +18,7 @@ export default async function SignInPage({ searchParams }: PageProps<"/signin">)
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-5 py-10">
-      <Link href="/" className="mb-8 flex items-center gap-2 text-base font-extrabold tracking-tight">
+      <Link href="/" className="mb-8 flex items-center gap-2 text-base font-extrabold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
         <Logo />
         EvenCost
       </Link>

@@ -76,6 +76,7 @@ export async function createGroupAction(_prev: FormState, formData: FormData): P
 /** Revokes the current link and issues a new one, in one transaction. */
 export async function regenerateInviteAction(groupId: string): Promise<void> {
   const session = await requireSession();
+  if (!z.uuid().safeParse(groupId).success) redirect("/dashboard");
   const group = await getGroupForViewer(groupId, session.user.id);
   if (!group || group.ownerId !== session.user.id) invalid(groupId);
 
@@ -94,6 +95,7 @@ export async function regenerateInviteAction(groupId: string): Promise<void> {
 /** Soft leave: the row stays, so past expenses still point at a real person. */
 export async function leaveGroupAction(groupId: string): Promise<void> {
   const session = await requireSession();
+  if (!z.uuid().safeParse(groupId).success) redirect("/dashboard");
   const group = await getGroupForViewer(groupId, session.user.id);
   if (!group) invalid(groupId);
   // Owners cannot leave: there is no ownership transfer in v1 (decision 3).
@@ -111,6 +113,8 @@ export async function leaveGroupAction(groupId: string): Promise<void> {
 /** Owner only, and only once the person's balance is zero (rule 1). */
 export async function removeMemberAction(groupId: string, userId: string): Promise<void> {
   const session = await requireSession();
+  if (!z.uuid().safeParse(groupId).success) redirect("/dashboard");
+  if (!z.uuid().safeParse(userId).success) invalid(groupId);
   const group = await getGroupForViewer(groupId, session.user.id);
   if (!group || group.ownerId !== session.user.id) invalid(groupId);
   if (userId === session.user.id) invalid(groupId);
@@ -142,6 +146,7 @@ export async function removeMemberAction(groupId: string, userId: string): Promi
 /** Soft delete: members lose access, the history survives (rule 6). */
 export async function deleteGroupAction(groupId: string): Promise<void> {
   const session = await requireSession();
+  if (!z.uuid().safeParse(groupId).success) redirect("/dashboard");
   const group = await getGroupForViewer(groupId, session.user.id);
   if (!group || group.ownerId !== session.user.id) invalid(groupId);
 

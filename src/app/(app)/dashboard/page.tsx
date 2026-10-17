@@ -35,9 +35,9 @@ export default async function DashboardPage() {
   const avatarColor = session.user.avatarColor ?? undefined;
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-lg px-4 pb-16 md:max-w-5xl md:px-7">
+    <main className="mx-auto flex h-dvh w-full max-w-lg flex-col overflow-hidden px-4 md:max-w-5xl md:px-7">
       <header className="flex items-center gap-3 py-4 md:pt-7">
-        <Link href="/dashboard" className="flex items-center gap-2 text-base font-extrabold tracking-tight">
+        <Link href="/dashboard" className="flex items-center gap-2 text-base font-extrabold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
           <Logo />
           EvenCost
         </Link>
@@ -67,31 +67,33 @@ export default async function DashboardPage() {
         Your groups
       </p>
 
-      {tiles.length === 0 && (
-        <div className="mb-3 flex flex-col items-center rounded-2xl border border-dashed border-border px-6 py-10 text-center">
-          <span className="grid size-12 place-items-center rounded-2xl bg-secondary text-muted-foreground">
-            <UsersRound className="size-6" aria-hidden="true" />
-          </span>
-          <h2 className="mt-3 text-base font-bold">No groups yet</h2>
-          <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
-            Create one, share the invite link, and start splitting.
-          </p>
-        </div>
-      )}
+      <div className="min-h-0 flex-1 overflow-y-auto pb-16">
+        {tiles.length === 0 && (
+          <div className="mb-3 flex flex-col items-center rounded-2xl border border-dashed border-border px-6 py-10 text-center">
+            <span className="grid size-12 place-items-center rounded-2xl bg-secondary text-muted-foreground">
+              <UsersRound className="size-6" aria-hidden="true" />
+            </span>
+            <h2 className="mt-3 text-base font-bold">No groups yet</h2>
+            <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
+              Create one, share the invite link, and start splitting.
+            </p>
+          </div>
+        )}
 
-      <div className="grid gap-3 md:grid-cols-2">
-        {tiles.map(({ group, members, balance, outstanding }) => (
-          <GroupTile
-            key={group.id}
-            id={group.id}
-            name={group.name}
-            currency={group.currency}
-            members={members}
-            yourBalance={balance}
-            outstanding={outstanding}
-          />
-        ))}
-        <NewGroupDialog />
+        <div className="grid gap-3 md:grid-cols-2">
+          {tiles.map(({ group, members, balance, outstanding }) => (
+            <GroupTile
+              key={group.id}
+              id={group.id}
+              name={group.name}
+              currency={group.currency}
+              members={members}
+              yourBalance={balance}
+              outstanding={outstanding}
+            />
+          ))}
+          <NewGroupDialog />
+        </div>
       </div>
     </main>
   );

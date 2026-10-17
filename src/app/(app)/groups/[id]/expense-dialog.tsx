@@ -125,11 +125,13 @@ function ExpenseForm({
   return (
     <>
         <DialogHeader>
-          <DialogTitle>{editing ? "Edit expense" : "Add expense"}</DialogTitle>
+          <DialogTitle>{editing ? (canEdit ? "Edit expense" : "Expense") : "Add expense"}</DialogTitle>
           <DialogDescription>
-            {editing
-              ? "Saving replaces the split entirely. Balances recompute from it."
-              : "Who paid, how much, and how it is shared."}
+            {!canEdit
+              ? "Only the person who added it, or the group owner, can change this."
+              : editing
+                ? "Saving replaces the split entirely. Balances recompute from it."
+                : "Who paid, how much, and how it is shared."}
           </DialogDescription>
         </DialogHeader>
 

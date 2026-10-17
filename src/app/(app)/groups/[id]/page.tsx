@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { z } from "zod";
 import { ArrowLeft, ChevronRight, Link2, Plus } from "lucide-react";
 import { CategoryIcon } from "@/components/category-icon";
 import { canEditExpense, canReverseSettlement } from "@/domain/permissions";
@@ -25,6 +26,8 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
   const { id } = await params;
   const { before } = await searchParams;
   const session = await requireSession();
+  // A malformed id is not a database error; it is simply not a group.
+  if (!z.uuid().safeParse(id).success) notFound();
 
   const group = await getGroupForViewer(id, session.user.id);
   // A group that is not yours and a group that does not exist are the same
@@ -293,7 +296,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
               {expenses.nextCursor && (
                 <Link
                   href={`/groups/${group.id}?before=${encodeURIComponent(expenses.nextCursor.toISOString())}`}
-                  className="block rounded-xl border border-border bg-card py-2.5 text-center text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                  className="block rounded-xl border border-border bg-card py-2.5 text-center text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   Show earlier expenses
                 </Link>

@@ -37,4 +37,8 @@ describe("formatMoney", () => {
   it("never uses a symbol, so no currency looks different from the rest", () => {
     expect(formatMoney(100, "EUR")).not.toContain("€");
   });
+
+  it("falls back instead of throwing on a malformed code", () => {
+    expect(formatMoney(12300, "NO")).toBe("NO 123.00");
+  });
 });
