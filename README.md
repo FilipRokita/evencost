@@ -10,6 +10,10 @@
   <img src="https://img.shields.io/badge/PostgreSQL_17-4169E1?logo=postgresql&amp;logoColor=white" alt="PostgreSQL 17">
   <img src="https://img.shields.io/badge/Drizzle_ORM-1C1C1C?logo=drizzle&amp;logoColor=C5F74F" alt="Drizzle ORM">
   <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&amp;logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/Better_Auth-000000?logo=betterauth&amp;logoColor=white" alt="Better Auth">
+  <img src="https://img.shields.io/badge/shadcn%2Fui-000000?logo=shadcnui&amp;logoColor=white" alt="shadcn/ui">
+  <img src="https://img.shields.io/badge/Zod-3E67B1?logo=zod&amp;logoColor=white" alt="Zod">
+  <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&amp;logoColor=white" alt="Vitest">
 </div>
 
 ---
