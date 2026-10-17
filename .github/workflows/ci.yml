@@ -20,4 +20,5 @@ jobs:
       # Next 16 does not lint during build, so this has to be its own step.
       - run: npm run lint
       - run: npm run typecheck
+      - run: npm test
       - run: npm run build

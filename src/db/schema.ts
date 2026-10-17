@@ -1,3 +1,4 @@
+import { CATEGORIES } from "@/domain/categories";
 import {
   date,
   foreignKey,
@@ -15,20 +16,8 @@ import {
  * A closed enum, not free text: an unknown key would render as an empty icon.
  * The UI maps each key to a lucide icon.
  */
-export const expenseCategory = pgEnum("expense_category", [
-  "food",
-  "fuel",
-  "lodging",
-  "groceries",
-  "activity",
-  "transport",
-  "tickets",
-  "taxi",
-  "drinks",
-  "other",
-  "health",
-  "gift",
-]);
+// Built from the domain's list, so there is one place to add a category.
+export const expenseCategory = pgEnum("expense_category", CATEGORIES);
 
 const createdAt = timestamp("created_at", { withTimezone: true, precision: 6 })
   .notNull()
