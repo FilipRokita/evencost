@@ -1,10 +1,6 @@
-# EvenCost
-
-<div align="center">
-  <img src="docs/banner.svg" width="340" alt="EvenCost logo">
-</div>
-
-<br>
+<h1 align="center">
+  <img src="docs/banner.svg" width="340" alt="EvenCost">
+</h1>
 
 <div align="center">
   <img src="https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&amp;logoColor=white" alt="Next.js">
@@ -35,10 +31,9 @@ and no chasing people for small amounts.
 
 ## 📸 Screenshots
 
-| View | Phone | Desktop |
-| :--- | :---: | :---: |
-| **Dashboard** | <img src="docs/screenshots/dashboard-phone.png" alt="EvenCost dashboard on a phone" width="200"> | <img src="docs/screenshots/dashboard-desktop.png" alt="EvenCost dashboard on desktop" width="400"> |
-| **Group** | <img src="docs/screenshots/group-phone.png" alt="EvenCost group on a phone" width="200"> | <img src="docs/screenshots/group-desktop.png" alt="EvenCost group on desktop" width="400"> |
+![Group on desktop and phone](docs/screenshots/showcase-group.png)
+
+![Dashboard on desktop and phone](docs/screenshots/showcase-dashboard.png)
 
 ## ✨ What it does
 
