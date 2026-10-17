@@ -1,6 +1,6 @@
 # 💸 EvenCost
 
-Split shared expenses in a group — a trip, a flat, a project. Everyone adds what
+Split shared expenses in a group. A trip, a flat, a project. Everyone adds what
 they paid, and EvenCost works out who owes whom and an optimized way to settle.
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)
@@ -14,19 +14,19 @@ they paid, and EvenCost works out who owes whom and an optimized way to settle.
 
 ## ✨ What it does
 
-1. **Create a group** — a name, a description, one currency
+1. **Create a group.** A name, a description, one currency
 2. **Invite people** with a single link; they sign up and land straight in
-3. **Add expenses** — who paid, how much, and how to split it: equally, by exact
+3. **Add expenses.** Who paid, how much, and how to split it: equally, by exact
    amounts, or by percentage
 4. **Watch the balances** update as expenses land
-5. **Settle up** — EvenCost suggests an optimized set of transfers that clears
+5. **Settle up.** EvenCost suggests an optimized set of transfers that clears
    the whole group, or you record a partial payment instead
-6. **Everyone at zero** — done
+6. **Everyone at zero.** Done
 
 Settlement is a recorded transfer, not a checkbox, so paying back half of what
 you owe works properly.
 
-**Dark by default, built phone-first — but not phone-only.** On a phone it is a
+**Dark by default, built phone-first. But not phone-only.** On a phone it is a
 back arrow, bottom sheets and thumb-sized actions, made for the end of the trip.
 Open it on a laptop and it becomes a two-column layout: expenses on the left,
 balances and people on the right.
@@ -37,14 +37,14 @@ balances and people on the right.
 | :--- | :--- |
 | Frontend | Next.js 16 (App Router), Tailwind CSS 4, shadcn/ui |
 | Backend | Server Actions + Route Handlers |
-| Database | PostgreSQL 17 — local to the dev container, any hosted Postgres in production |
+| Database | PostgreSQL 17. Local to the dev container, any hosted Postgres in production |
 | ORM | Drizzle |
 | Auth | Better Auth |
 | Dev environment | Dev Container (VS Code) |
 
 At runtime the app uses one database URL; migrations use a second, direct one.
 Swapping the local Postgres for a hosted one (Neon, Supabase) is a config
-change — not a code change.
+change. Not a code change.
 
 ## 🔧 How it's built
 
@@ -70,22 +70,22 @@ Everything runs inside the dev container; nothing is installed on your machine.
    cluster, creates the local `evencost` role and database, and runs
    `npm install`.
 
-2. **Create the env files** — both are gitignored, so a fresh clone has neither:
+2. **Create the env files.** Both are gitignored, so a fresh clone has neither:
 
    ```bash
    cp .env.example .env
    cp .devcontainer/.env.example .devcontainer/.env
    ```
 
-   Fill in the values — the example files say what goes where, and
+   Fill in the values. The example files say what goes where, and
    [Dev environment](docs/dev-environment.md#two-env-files) explains why.
 
-3. **(Optional) Seed demo data** — `npm run db:seed` fills the database with two
+3. **(Optional) Seed demo data.** `npm run db:seed` fills the database with two
    demo groups to click through. Skip it to start empty. Sign in with
    `filip@evencost.test` / `devpassword`. The database lives in the container
-   layer, so it is wiped on every rebuild — re-run the seed to get it back.
+   layer, so it is wiped on every rebuild. Re-run the seed to get it back.
 
-4. **Start the dev server** — `npm run dev`, then open
+4. **Start the dev server.** `npm run dev`, then open
    [http://localhost:3000](http://localhost:3000).
 
 Dependencies are installed on create, and migrations run on create and on every
@@ -122,7 +122,7 @@ production sign-in is effectively unthrottled until it is.
 
 - [x] Scaffold Next.js + a documented getting-started path
 - [x] Drizzle schema + migrations
-- [x] Domain core — splits, balances, netting — with unit and property tests
+- [x] Domain core. Splits, balances, netting. With unit and property tests
 - [x] Auth
 - [x] Groups and invites
 - [x] Expenses

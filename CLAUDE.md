@@ -60,7 +60,8 @@ text to wade through.
 
 Never use an em dash in text a user will read: UI labels, headings, landing copy,
 error messages, emails. End the sentence and start a new one, or use a comma or
-colon. Docs, README, code comments and commit messages are fine as they are.
+colon. Docs, code comments and commit messages are fine as they are. README.md
+is the exception: it is user-facing, so the em-dash rule applies there too.
 
 ## Documentation
 
