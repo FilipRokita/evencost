@@ -18,11 +18,18 @@
 
 ---
 
-Split shared expenses in a group. A trip, a flat, a project, or the place you
-share every month. Everyone adds what they paid, EvenCost keeps the balances
-current, and when it is time to close the books it suggests an optimized set of
-transfers that clears the whole group. No spreadsheets, no mental arithmetic,
-and no chasing people for small amounts.
+**EvenCost** is a small web app for **splitting shared costs** in a group. Use it
+for a trip, a flat, a project, or the place you share every month. Everyone adds
+what they paid, and the balances stay current without a spreadsheet.
+
+Each expense is split **equally**, by **exact amounts**, or by **percentage**.
+The arithmetic is **exact to the cent**, so the parts always add up to the total,
+and deleted expenses stay in the history.
+
+When it is time to close the books, EvenCost suggests an **optimized set of
+transfers** that clears the whole group. Record the **full settle-up** or a
+**partial payment**, and everyone can see who owes whom. No spreadsheets, no
+mental arithmetic, and no chasing people for small amounts.
 
 ## 📖 Table of contents
 
