@@ -1,6 +1,8 @@
-<h1 align="center">
+<div align="center">
   <img src="docs/banner.svg" width="340" alt="EvenCost">
-</h1>
+</div>
+
+<br>
 
 <div align="center">
   <img src="https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&amp;logoColor=white" alt="Next.js">
