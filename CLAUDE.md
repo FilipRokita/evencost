@@ -101,3 +101,8 @@ gets its own entry instead of overwriting this one.
 
 Whatever a plan produces stays in its entry. `dev-only/` is scratch space for
 prototypes tied to no plan.
+
+Every plan ends with a review and testing stage: check that it was fully
+implemented, that every rule and acceptance criterion has code and tests, and
+that the app still works as a whole. Fix what is broken or write it down as a
+named limitation.
