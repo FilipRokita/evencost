@@ -98,20 +98,22 @@ file that proves it.
 
 Everything runs inside the dev container; nothing is installed on your machine.
 
-1. **Open the repo in the container.** In VS Code, run *Dev Containers: Reopen in
-   Container*. On first creation this installs PostgreSQL 17, starts the
-   cluster, creates the local `evencost` role and database, and runs
-   `npm install`.
-
-2. **Create the env files.** Both are gitignored, so a fresh clone has neither:
+1. **Create the env files.** Both are gitignored, so a fresh clone has neither:
 
    ```bash
    cp .env.example .env
    cp .devcontainer/.env.example .devcontainer/.env
    ```
 
-   Fill in the values. The example files say what goes where, and
-   [Dev environment](docs/dev-environment.md#two-env-files) explains why.
+   Fill in the values. `.devcontainer/.env` is required before the container can
+   start; `.env` is what the app and the migrations read. The example files say
+   what goes where, and [Dev environment](docs/dev-environment.md#two-env-files)
+   explains why.
+
+2. **Open the repo in the container.** In VS Code, run *Dev Containers: Reopen in
+   Container*. On first creation this installs PostgreSQL 17, starts the
+   cluster, creates the local `evencost` role and database, runs `npm install`
+   and applies the migrations.
 
 3. **(Optional) Seed demo data.** `npm run db:seed` fills the database with two
    demo groups to click through. Skip it to start empty. Sign in with
@@ -122,7 +124,8 @@ Everything runs inside the dev container; nothing is installed on your machine.
    [http://localhost:3000](http://localhost:3000).
 
 Dependencies are installed on create, and migrations run on create and on every
-start. Neither is a step you run by hand.
+start. Neither is a step you run by hand once the env files exist. If the
+container was created before `.env` existed, run `npm run db:migrate` once.
 
 ## ☁️ Run it on a host
 
