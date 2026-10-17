@@ -15,6 +15,13 @@
       "when": 1792231307994,
       "tag": "0001_elite_morlocks",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792235898846,
+      "tag": "0002_ambiguous_unicorn",
+      "breakpoints": true
     }
   ]
 }

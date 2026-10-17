@@ -52,12 +52,13 @@ async function makeGroup(debt: number) {
   await db.insert(expenseSplits).values(
     [a, b, c].map((userId, index) => ({
       expenseId: expense.id,
+      groupId: group.id,
       userId,
       amountMinor: index === 0 ? debt - share * 2 : share,
     })),
   );
 
-  return group.id;
+  return { groupId: group.id, users: [a, b, c] as const };
 }
 
 afterAll(async () => {
@@ -67,7 +68,7 @@ afterAll(async () => {
 
 describe("recordSuggestedTransfers", () => {
   it("settles the group and empties every balance", async () => {
-    const groupId = await makeGroup(90_000);
+    const { groupId } = await makeGroup(90_000);
     const before = await loadBalances(groupId);
     const transfers = netting(before);
 
@@ -79,17 +80,17 @@ describe("recordSuggestedTransfers", () => {
   });
 
   it("does nothing when everybody is already even", async () => {
-    const groupId = await makeGroup(9_000);
+    const { groupId, users } = await makeGroup(9_000);
     await recordSuggestedTransfers(groupId, netting(await loadBalances(groupId)));
 
     const second = await recordSuggestedTransfers(groupId, [
-      { fromUserId: createdUsers[1], toUserId: createdUsers[0], amountMinor: 3000 },
+      { fromUserId: users[1], toUserId: users[0], amountMinor: 3000 },
     ]);
     expect(second).toBe(0);
   });
 
   it("never counts the same transfer twice when two settle-ups race", async () => {
-    const groupId = await makeGroup(90_000);
+    const { groupId } = await makeGroup(90_000);
     // Both people compute the same suggestions from the same starting balances.
     const transfers = netting(await loadBalances(groupId));
 

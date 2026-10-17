@@ -209,6 +209,7 @@ async function main() {
       await db.insert(expenseSplits).values(
         Object.entries(e.splits).map(([userId, amountMinor]) => ({
           expenseId: row.id,
+          groupId: group.id,
           userId,
           amountMinor,
         })),

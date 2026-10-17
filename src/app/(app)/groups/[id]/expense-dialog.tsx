@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useMemo, useState, type ReactNode } from "react";
 import { CategoryIcon } from "@/components/category-icon";
 import { Avatar } from "@/components/avatar";
+import { ConfirmSubmit } from "@/components/confirm-submit";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -84,6 +85,7 @@ function ExpenseForm({
     if (state.success) onDone();
   }, [state.success, onDone]);
 
+  const deleteFormId = expense ? `delete-expense-${expense.id}` : "";
   const total = toMinorUnits(amount);
 
   /**
@@ -336,10 +338,14 @@ function ExpenseForm({
         </form>
 
         {editing && expense && canEdit && (
-          <form action={deleteExpenseAction.bind(null, expense.id)} className="pt-1">
-            <Button type="submit" variant="destructive" className="w-full">
-              Delete expense
-            </Button>
+          <form id={deleteFormId} action={deleteExpenseAction.bind(null, expense.id)} className="pt-1">
+            <ConfirmSubmit
+              formId={deleteFormId}
+              label="Delete expense"
+              title="Delete this expense?"
+              description="It leaves the balances and stays in the history as deleted. This cannot be undone from the app."
+              className="w-full"
+            />
             <p className="mt-1.5 text-center text-xs text-muted-foreground">
               It leaves the balances but stays in the history.
             </p>
@@ -358,7 +364,7 @@ export function ExpenseDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-h-[88dvh] overflow-y-auto">
+      <DialogContent>
         {open && <ExpenseForm {...formProps} onDone={() => setOpen(false)} />}
       </DialogContent>
     </Dialog>

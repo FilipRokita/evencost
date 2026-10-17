@@ -2,6 +2,8 @@ import { CATEGORIES } from "@/domain/categories";
 import { sql } from "drizzle-orm";
 import {
   boolean,
+  char,
+  check,
   date,
   foreignKey,
   index,
@@ -11,6 +13,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  unique,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -35,6 +38,8 @@ export const users = pgTable("users", {
   id: uuid("id")
     .primaryKey()
     .default(sql`pg_catalog.gen_random_uuid()`),
+  // Shown everywhere and deliberately not unique: invites arrive by link, so
+  // nobody is ever looked up by name (rule 17).
   displayName: text("display_name").notNull(),
   // Login only. Never shown to anyone else.
   email: text("email").notNull().unique(),
@@ -126,7 +131,7 @@ export const groups = pgTable("groups", {
   name: text("name").notNull(),
   description: text("description").notNull().default(""),
   // Immutable after creation. No edit path, so no migration case (decision 5).
-  currency: text("currency").notNull(),
+  currency: char("currency", { length: 3 }).notNull(),
   ownerId: uuid("owner_id")
     .notNull()
     .references(() => users.id),
@@ -200,6 +205,8 @@ export const expenses = pgTable(
     createdAt,
   },
   (t) => [
+    // The database refuses a zero or negative expense, whatever the app does.
+    check("expenses_amount_positive", sql`${t.amountMinor} > 0`),
     // The payer has to be a member of this group (rule 8).
     foreignKey({
       name: "expenses_payer_member_fk",
@@ -211,6 +218,9 @@ export const expenses = pgTable(
       columns: [t.groupId, t.createdByUserId],
       foreignColumns: [memberships.groupId, memberships.userId],
     }),
+    // Target for the splits' composite foreign key below, which is what keeps a
+    // split from pointing at a different group's expense.
+    unique("expenses_id_group_unique").on(t.id, t.groupId),
     index("expenses_group_date_idx").on(t.groupId, t.spentOn),
   ],
 );
@@ -227,6 +237,9 @@ export const expenseSplits = pgTable(
     expenseId: uuid("expense_id")
       .notNull()
       .references(() => expenses.id, { onDelete: "cascade" }),
+    // Carried so the database can check the split's member against the expense's
+    // group. It is not displayed; the expense already knows its group.
+    groupId: uuid("group_id").notNull(),
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id),
@@ -234,6 +247,19 @@ export const expenseSplits = pgTable(
   },
   (t) => [
     primaryKey({ columns: [t.expenseId, t.userId] }),
+    check("expense_splits_amount_non_negative", sql`${t.amountMinor} >= 0`),
+    // Every person in a split has to belong to the group the expense belongs
+    // to, not merely to some group (rule 8).
+    foreignKey({
+      name: "expense_splits_member_fk",
+      columns: [t.groupId, t.userId],
+      foreignColumns: [memberships.groupId, memberships.userId],
+    }),
+    foreignKey({
+      name: "expense_splits_expense_group_fk",
+      columns: [t.expenseId, t.groupId],
+      foreignColumns: [expenses.id, expenses.groupId],
+    }),
     index("expense_splits_user_idx").on(t.userId),
   ],
 );
@@ -257,6 +283,8 @@ export const settlements = pgTable(
     createdAt,
   },
   (t) => [
+    check("settlements_amount_positive", sql`${t.amountMinor} > 0`),
+    check("settlements_distinct_parties", sql`${t.fromUserId} <> ${t.toUserId}`),
     foreignKey({
       name: "settlements_from_member_fk",
       columns: [t.groupId, t.fromUserId],

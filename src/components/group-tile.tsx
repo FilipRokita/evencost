@@ -16,7 +16,7 @@ export type GroupTileProps = {
 };
 
 /** At most three circles: two faces plus a count when the group is bigger. */
-function MemberStack({ members }: { members: GroupTileProps["members"] }) {
+export function MemberStack({ members }: { members: GroupTileProps["members"] }) {
   const shown = members.length > 3 ? members.slice(0, 2) : members;
   const hidden = members.length - shown.length;
 

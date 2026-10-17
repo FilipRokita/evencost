@@ -25,6 +25,7 @@ inside a folder is that folder's business, not this file's.
 | [`eslint.config.mjs`](../eslint.config.mjs) | ESLint 9 flat config. `next lint` no longer exists, so linting is its own command. |
 | [`drizzle/`](../drizzle/) | Generated SQL migrations and their snapshots. Committed, so the schema history is in git. |
 | [`drizzle.config.ts`](../drizzle.config.ts) | drizzle-kit configuration. Migrations connect through `DIRECT_URL`, never the pooled URL. |
+| [`vercel.json`](../vercel.json) | The host's build command: apply migrations, then build. |
 | [`components.json`](../components.json) | shadcn config. Its aliases point inside `src/`, or the CLI writes components to the wrong place. |
 
 ## Gitignored
@@ -33,7 +34,7 @@ These exist on a working machine but are deliberately absent from the repo.
 
 | Path | What it holds | Why it is ignored |
 | :--- | :--- | :--- |
-| `.env` | Application secrets — `DATABASE_URL`. | Secrets. |
+| `.env` | Application configuration — the database URL and the Better Auth secret and URL. | Secrets. |
 | `.devcontainer/.env` | Dev tooling secrets — `ANTHROPIC_AUTH_TOKEN`, `CONTEXT7_API_KEY`. | Secrets. |
 | `node_modules/` | Installed dependencies. | Reproducible from the lockfile. |
 | `.next/` | Next.js build output. | Generated. |
@@ -53,11 +54,10 @@ root, where Next.js looks for them.
 ```
 src/
   domain/      pure TypeScript: splits, balances, netting, permissions
-  db/          Drizzle schema and the database client
+  db/          Drizzle schema, the database client and the demo seed
   components/  UI; components/ui is written by the shadcn CLI
-  lib/         auth, validation, rate limiting, cn()
+  lib/         session, auth, data access, invite and settlement helpers
   app/         routes, layouts and Server Actions
-  proxy.ts     Next 16 keeps this inside src/
 ```
 
 The rule that matters: **`src/domain/` imports nothing from Next.js, React or the

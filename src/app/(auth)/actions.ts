@@ -1,6 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/db";
@@ -8,7 +9,8 @@ import { users } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { pickAvatarColor } from "@/lib/avatar";
 import type { FormState } from "@/lib/form-state";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit, type RateLimitResult } from "@/lib/rate-limit";
+import { safeRedirectPath } from "@/lib/redirect";
 
 const email = z.email("Enter a valid email address.");
 const password = z.string().min(8, "Use at least 8 characters.");
@@ -27,12 +29,30 @@ const registration = z.object({
 const LIMIT = { limit: 5, windowMs: 60_000 };
 
 /**
+ * The proxy's forwarded address, or a constant when there is none. Per-IP and
+ * per-email both matter: the first stops a password spray across many accounts,
+ * the second stops a single account from being hammered.
+ */
+async function clientIp(): Promise<string> {
+  const requestHeaders = await headers();
+  const forwarded = requestHeaders.get("x-forwarded-for");
+  return forwarded?.split(",")[0]?.trim() || requestHeaders.get("x-real-ip") || "local";
+}
+
+function rateLimited(keys: readonly string[]): RateLimitResult | null {
+  for (const key of keys) {
+    const result = checkRateLimit(key, LIMIT);
+    if (!result.allowed) return result;
+  }
+  return null;
+}
+
+/**
  * Where to go after signing in. Only same-origin paths are accepted: "//evil.com"
  * and absolute URLs are exactly the open redirect this guards against.
  */
 function destination(formData: FormData): string {
-  const value = field(formData, "callbackUrl");
-  return value.startsWith("/") && !value.startsWith("//") ? value : "/dashboard";
+  return safeRedirectPath(field(formData, "callbackUrl"));
 }
 
 function field(formData: FormData, key: string): string {
@@ -47,8 +67,11 @@ export async function signInAction(_prev: FormState, formData: FormData): Promis
   });
   if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
 
-  const limit = checkRateLimit(`signin:${parsed.data.email}`, LIMIT);
-  if (!limit.allowed) {
+  const limit = rateLimited([
+    `signin:ip:${await clientIp()}`,
+    `signin:email:${parsed.data.email.toLowerCase()}`,
+  ]);
+  if (limit) {
     return { error: `Too many attempts. Try again in ${limit.retryAfterSeconds}s.` };
   }
 
@@ -71,8 +94,11 @@ export async function signUpAction(_prev: FormState, formData: FormData): Promis
   });
   if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
 
-  const limit = checkRateLimit(`signup:${parsed.data.email}`, LIMIT);
-  if (!limit.allowed) {
+  const limit = rateLimited([
+    `signup:ip:${await clientIp()}`,
+    `signup:email:${parsed.data.email.toLowerCase()}`,
+  ]);
+  if (limit) {
     return { error: `Too many attempts. Try again in ${limit.retryAfterSeconds}s.` };
   }
 

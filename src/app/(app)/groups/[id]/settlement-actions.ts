@@ -44,12 +44,14 @@ export async function recordTransfersAction(
   if (transfers.length === 0) return { error: "Pick at least one transfer." };
   if (transfers.length > MAX_TRANSFERS) return { error: "Too many transfers at once." };
 
+  // Both sides have to be members, but not necessarily active: somebody who
+  // left with a balance still has a debt to clear (rule 1a).
   const members = await listMembers(groupId);
-  const activeIds = new Set(members.filter((member) => member.leftAt === null).map((member) => member.id));
+  const memberIds = new Set(members.map((member) => member.id));
 
   for (const transfer of transfers) {
     if (transfer.fromUserId === transfer.toUserId) return { error: "A transfer needs two people." };
-    if (!activeIds.has(transfer.fromUserId) || !activeIds.has(transfer.toUserId)) {
+    if (!memberIds.has(transfer.fromUserId) || !memberIds.has(transfer.toUserId)) {
       return { error: "Both people have to be in the group." };
     }
     if (!Number.isInteger(transfer.amountMinor) || transfer.amountMinor <= 0) {
@@ -99,9 +101,11 @@ export async function recordTransferAction(_prev: FormState, formData: FormData)
     return { fieldErrors: { amount: ["Enter an amount greater than zero."] } };
   }
 
+  // A departed member can still be paid back, so the counterparties only have
+  // to have a membership row.
   const members = await listMembers(groupId);
-  const activeIds = new Set(members.filter((member) => member.leftAt === null).map((member) => member.id));
-  if (!activeIds.has(parsed.data.fromUserId) || !activeIds.has(parsed.data.toUserId)) {
+  const memberIds = new Set(members.map((member) => member.id));
+  if (!memberIds.has(parsed.data.fromUserId) || !memberIds.has(parsed.data.toUserId)) {
     return { error: "Both people have to be in the group." };
   }
 

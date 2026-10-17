@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Handshake, Receipt, Scale } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 const NODES = [
@@ -53,17 +54,17 @@ function Graph({
 
 const FEATURES = [
   {
-    icon: "🧾",
+    icon: Receipt,
     title: "Log expenses in seconds",
     body: "Amount, who paid, who's in. Add a line from a bottom sheet, with no form to hunt for.",
   },
   {
-    icon: "⚖️",
+    icon: Scale,
     title: "Split three ways",
     body: "Equally, by exact amounts, or by percentage. Splits always sum to the total, to the cent.",
   },
   {
-    icon: "🤝",
+    icon: Handshake,
     title: "Settle with one tap",
     body: "One tap records the optimized transfers. Or settle just part of it. Settlements are transfers, not checkboxes.",
   },
@@ -85,13 +86,13 @@ export default function Page() {
         </Link>
         <div className="ml-auto flex items-center gap-1">
           <Link
-            href="/signin"
+            href="/signin?mode=signin"
             className="rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
           >
             Log in
           </Link>
           <Link
-            href="/signin?mode=register"
+            href="/signin?mode=signup"
             className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-[filter] hover:brightness-110"
           >
             Get started
@@ -106,7 +107,7 @@ export default function Page() {
         />
 
         <p className="mx-auto mb-5 inline-block max-w-full rounded-full border border-border bg-card px-4 py-1.5 text-xs font-semibold text-muted-foreground">
-          <span className="text-primary">Netting engine.</span> Debts collapse into the simplest
+          <span className="text-primary">Netting engine.</span> Debts collapse into optimized
           transfers
         </p>
 
@@ -119,19 +120,19 @@ export default function Page() {
         </h1>
 
         <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground">
-          Track who paid what on your trip, split it fairly, and settle up with a handful of
-          transfers, not everyone paying everyone.
+          Track who paid what on your trip, split it fairly, and settle up with an optimized set
+          of transfers, not everyone paying everyone.
         </p>
 
         <div className="mt-7 flex flex-wrap justify-center gap-2.5">
           <Link
-            href="/signin?mode=register"
+            href="/signin?mode=signup"
             className="rounded-2xl bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground transition-[filter] hover:brightness-110"
           >
             Start splitting. It&apos;s free
           </Link>
           <Link
-            href="/signin"
+            href="/signin?mode=signin"
             className="rounded-2xl border border-border bg-secondary px-6 py-3.5 text-base font-semibold transition-colors hover:bg-accent"
           >
             I have an account
@@ -173,15 +174,18 @@ export default function Page() {
       </h2>
 
       <div className="mt-4 grid gap-3.5 sm:grid-cols-3">
-        {FEATURES.map((f) => (
-          <div key={f.title} className="rounded-2xl border border-border bg-card p-6">
-            <div className="text-2xl" aria-hidden="true">
-              {f.icon}
+        {FEATURES.map((f) => {
+          const Icon = f.icon;
+          return (
+            <div key={f.title} className="rounded-2xl border border-border bg-card p-6">
+              <span className="grid size-9 place-items-center rounded-xl bg-primary/15 text-primary">
+                <Icon className="size-5" aria-hidden="true" />
+              </span>
+              <h3 className="mt-3 text-base font-bold">{f.title}</h3>
+              <p className="mt-1.5 text-sm text-muted-foreground">{f.body}</p>
             </div>
-            <h3 className="mt-3 text-base font-bold">{f.title}</h3>
-            <p className="mt-1.5 text-sm text-muted-foreground">{f.body}</p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <h2 className="mt-20 text-center text-2xl font-extrabold tracking-[-0.02em]">

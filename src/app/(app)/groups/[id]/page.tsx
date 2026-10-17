@@ -1,19 +1,25 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ChevronRight, Link2, Plus } from "lucide-react";
 import { CategoryIcon } from "@/components/category-icon";
 import { canEditExpense, canReverseSettlement } from "@/domain/permissions";
 import { netting } from "@/domain/netting";
 import { ExpenseDialog } from "./expense-dialog";
+import { FloatingExpense } from "./floating-expense";
+import { MemberDialog } from "./member-dialog";
 import { SettleDialog } from "./settle-dialog";
 import { reverseSettlementAction } from "./settlement-actions";
 import { Avatar } from "@/components/avatar";
+import { MemberStack } from "@/components/group-tile";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/domain/money";
 import { getActiveInvite, getGroupForViewer, listExpenses, listMembers, listSettlements, loadBalances } from "@/lib/groups";
 import { requireSession } from "@/lib/session";
 import { deleteGroupAction, leaveGroupAction, regenerateInviteAction, removeMemberAction } from "../actions";
-import { InvitePanel } from "./invite-panel";
+import { InviteDialog } from "./invite-dialog";
+
+// The group lookup and membership check must finish before anything renders.
+export const instant = false;
 
 export default async function GroupPage({ params, searchParams }: PageProps<"/groups/[id]">) {
   const { id } = await params;
@@ -24,6 +30,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
   // A group that is not yours and a group that does not exist are the same
   // answer, so the response cannot be used to discover groups (rule 10).
   if (!group) notFound();
+  const groupId = group.id;
 
   const cursor = typeof before === "string" ? new Date(before) : undefined;
   const [members, balances, invite, expenses, settlements] = await Promise.all([
@@ -36,6 +43,13 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
   // Suggest only when something is actually outstanding.
   const transfers = Object.values(balances).some((value) => value !== 0) ? netting(balances) : [];
   const active = members.filter((member) => member.leftAt === null);
+  const departedMembers = members.filter((member) => member.leftAt !== null);
+  const membersById = new Map(members.map((member) => [member.id, member]));
+  // A departed member keeps a tile while they still carry a balance, so the
+  // debt stays visible until it is settled (rule 1).
+  const balanceMembers = members.filter(
+    (member) => member.leftAt === null || (balances[member.id] ?? 0) !== 0,
+  );
   const groupView = {
     ownerId: group.ownerId,
     members: members.map((member) => ({ userId: member.id, leftAt: member.leftAt })),
@@ -44,10 +58,14 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
   const inviteUrl = invite
     ? new URL(`/invite/${invite.token}`, process.env.BETTER_AUTH_URL ?? "http://localhost:3000").toString()
     : null;
+  async function regenerateInvite() {
+    "use server";
+    await regenerateInviteAction(groupId);
+  }
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-lg px-4 pb-16">
-      <header className="flex items-center gap-3 py-4">
+    <main className="mx-auto min-h-dvh w-full max-w-lg px-4 pb-16 md:flex md:h-dvh md:max-w-5xl md:flex-col md:overflow-hidden md:px-7 md:pb-0">
+      <header className="flex items-center gap-3 py-4 md:pt-7">
         <Link
           href="/dashboard"
           aria-label="Back to your groups"
@@ -65,267 +83,276 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
         <p className="mt-1 text-sm text-muted-foreground">{group.description}</p>
       )}
 
-      <div className="mt-4 flex items-center gap-2">
-        {active.slice(0, 5).map((member) => (
-          <Avatar key={member.id} name={member.displayName} color={member.avatarColor} className="size-8" />
-        ))}
-        {active.length > 5 && (
-          <span className="grid size-8 place-items-center rounded-full bg-secondary text-xs font-semibold text-muted-foreground">
-            +{active.length - 5}
-          </span>
-        )}
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <MemberStack members={active} />
         <span className="ml-1 text-sm text-muted-foreground">
           {active.length} {active.length === 1 ? "person" : "people"}
         </span>
-      </div>
-
-      <div className="mt-5">
-        <InvitePanel
+        <InviteDialog
           url={inviteUrl}
-          regenerate={async () => {
-            "use server";
-            await regenerateInviteAction(group.id);
-          }}
+          regenerate={isOwner ? regenerateInvite : undefined}
+          trigger={
+            <Button variant="secondary" size="sm" className="ml-auto">
+              <Link2 className="size-3.5" aria-hidden="true" />
+              Invite
+            </Button>
+          }
         />
       </div>
 
-      <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
-        Balances
-      </p>
-
-      <div className="grid grid-cols-2 gap-3">
-        {active.map((member) => {
-          const amount = balances[member.id] ?? 0;
-          return (
-            <div
-              key={member.id}
-              className={`rounded-xl border bg-card p-3 text-center ${
-                member.id === session.user.id ? "border-primary" : "border-border"
-              }`}
-            >
-              <Avatar name={member.displayName} color={member.avatarColor} className="mx-auto" />
-              <p className="mt-2 truncate text-xs font-semibold">
-                {member.displayName}
-                {member.id === session.user.id ? " (you)" : ""}
-              </p>
-              <p
-                className={`mt-1 text-sm font-bold tabular-nums ${
-                  amount > 0 ? "text-primary" : amount < 0 ? "text-destructive" : "text-muted-foreground"
-                }`}
-              >
-                <span className="block text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
-                  {amount > 0 ? "owed to" : amount < 0 ? "owes" : "settled"}
-                </span>
-                {amount === 0 ? formatMoney(0, group.currency) : formatMoney(Math.abs(amount), group.currency)}
-              </p>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="mt-4">
-        <SettleDialog
+      <div id="group-actions" className="mt-4 grid grid-cols-2 gap-2 md:flex md:w-fit">
+        <ExpenseDialog
           groupId={group.id}
           currency={group.currency}
           members={active}
+          viewerId={session.user.id}
+          trigger={
+            <Button size="lg" className="w-full md:w-auto">
+              <Plus className="size-4" aria-hidden="true" />
+              Add expense
+            </Button>
+          }
+        />
+        <SettleDialog
+          groupId={group.id}
+          currency={group.currency}
+          members={balanceMembers}
           transfers={transfers}
           trigger={
-            <Button className="w-full" size="lg" variant={transfers.length > 0 ? "default" : "secondary"}>
+            <Button size="lg" className="w-full md:w-auto" variant={transfers.length > 0 ? "default" : "secondary"}>
               {transfers.length > 0
-                ? `Settle up: ${transfers.length} transfer${transfers.length === 1 ? "" : "s"} suggested`
+                ? `Settle up: ${transfers.length} transfer${transfers.length === 1 ? "" : "s"}`
                 : "All settled"}
             </Button>
           }
         />
       </div>
 
-      <div className="mt-8 mb-3 flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
-          Expenses
-        </span>
-        <ExpenseDialog
-          groupId={group.id}
-          currency={group.currency}
-          members={active}
-          viewerId={session.user.id}
-          trigger={<Button size="sm">Add expense</Button>}
-        />
-      </div>
+      <FloatingExpense
+        sentinelId="group-actions"
+        groupId={group.id}
+        currency={group.currency}
+        members={active}
+        viewerId={session.user.id}
+      />
 
-      {expenses.items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center">
-          <p className="text-sm text-muted-foreground">No expenses yet. Add the first one.</p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {expenses.items.map((expense) => {
-            const payer = members.find((member) => member.id === expense.paidByUserId);
-            const mine = expense.splits[session.user.id] ?? 0;
-            return (
-              <ExpenseDialog
-                key={expense.id}
-                groupId={group.id}
-                currency={group.currency}
-                members={active}
-                viewerId={session.user.id}
-                canEdit={canEditExpense(session.user.id, groupView, expense)}
-                expense={{
-                  id: expense.id,
-                  title: expense.title,
-                  category: expense.category,
-                  amountMinor: expense.amountMinor,
-                  paidByUserId: expense.paidByUserId,
-                  spentOn: expense.spentOn,
-                  splits: expense.splits,
-                }}
-                trigger={
-                  <button
-                    type="button"
-                    className={`flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
-                      expense.deletedAt ? "opacity-55" : ""
+      <div className="mt-6 md:grid md:min-h-0 md:flex-1 md:grid-cols-[minmax(0,1fr)_340px] md:items-stretch md:gap-7">
+        {/* On a phone: balances first. On desktop: the right column. */}
+        <section className="min-w-0 md:order-2 md:overflow-y-auto md:pr-2 md:pb-8">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+            Balances
+          </p>
+
+          <div className="grid grid-cols-2 gap-3">
+            {balanceMembers.map((member) => {
+              const amount = balances[member.id] ?? 0;
+              const isSelf = member.id === session.user.id;
+              const activeMember = member.leftAt === null;
+              const canRemove = isOwner && !isSelf && activeMember;
+              const tappable = isSelf || canRemove;
+              const tileClass = `w-full rounded-xl border bg-card p-3 text-center ${
+                isSelf ? "border-primary" : "border-border"
+              } ${member.leftAt ? "opacity-75" : ""} ${
+                tappable
+                  ? "transition-colors hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  : ""
+              }`;
+              const contents = (
+                <>
+                  <Avatar name={member.displayName} color={member.avatarColor} className="mx-auto" />
+                  <span className="mt-2 block truncate text-xs font-semibold">
+                    {member.displayName}
+                    {isSelf ? " (you)" : ""}
+                    {member.leftAt ? " · left" : ""}
+                  </span>
+                  <span
+                    className={`mt-1 block text-sm font-bold tabular-nums ${
+                      amount > 0 ? "text-primary" : amount < 0 ? "text-destructive" : "text-muted-foreground"
                     }`}
                   >
-                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-secondary text-muted-foreground">
-                      <CategoryIcon category={expense.category} className="size-4" />
+                    <span className="block text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+                      {amount > 0 ? "owed to" : amount < 0 ? "owes" : "settled"}
                     </span>
-                    <span className="min-w-0 flex-1">
-                      <span className={`block truncate text-sm font-semibold ${expense.deletedAt ? "line-through" : ""}`}>
-                        {expense.title}
-                      </span>
-                      <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                        {payer?.displayName ?? "Someone"} paid · {expense.spentOn}
-                      </span>
-                    </span>
-                    <span className="shrink-0 text-right">
-                      <span className="block text-sm font-bold tabular-nums">
-                        {formatMoney(expense.amountMinor, group.currency)}
-                      </span>
-                      {expense.deletedAt ? (
-                        <span className="mt-1 inline-block rounded-full bg-secondary px-2 py-0.5 text-[0.65rem] font-semibold text-muted-foreground">
-                          deleted
-                        </span>
-                      ) : mine > 0 && expense.paidByUserId !== session.user.id ? (
-                        <span className="mt-1 inline-block rounded-full bg-destructive/15 px-2 py-0.5 text-[0.65rem] font-bold tabular-nums text-destructive">
-                          you owe {formatMoney(mine, group.currency)}
-                        </span>
-                      ) : null}
-                    </span>
-                    <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                  </button>
-                }
-              />
-            );
-          })}
+                    {amount === 0 ? formatMoney(0, group.currency) : formatMoney(Math.abs(amount), group.currency)}
+                  </span>
+                </>
+              );
 
-          {expenses.nextCursor && (
-            <Link
-              href={`/groups/${group.id}?before=${encodeURIComponent(expenses.nextCursor.toISOString())}`}
-              className="block rounded-xl border border-border bg-card py-2.5 text-center text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Show earlier expenses
-            </Link>
-          )}
-        </div>
-      )}
+              if (!tappable) {
+                return (
+                  <div key={member.id} className={tileClass}>
+                    {contents}
+                  </div>
+                );
+              }
 
-      {settlements.length > 0 && (
-        <>
-          <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
-            Settlements
-          </p>
-          <div className="space-y-2">
-            {settlements.map((settlement) => {
-              const canReverse =
-                !settlement.reversedAt &&
-                canReverseSettlement(session.user.id, groupView, settlement);
               return (
-                <div
-                  key={settlement.id}
-                  className={`flex items-center gap-3 rounded-xl border border-primary/20 bg-card p-3 ${
-                    settlement.reversedAt ? "opacity-55" : ""
-                  }`}
-                >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
-                    →
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className={`block truncate text-sm font-semibold ${settlement.reversedAt ? "line-through" : ""}`}>
-                      {members.find((m) => m.id === settlement.fromUserId)?.displayName ?? "Someone"} paid{" "}
-                      {members.find((m) => m.id === settlement.toUserId)?.displayName ?? "someone"}
-                    </span>
-                    <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                      {settlement.note}
-                    </span>
-                  </span>
-                  <span className="shrink-0 text-right">
-                    <span className="block text-sm font-bold tabular-nums">
-                      {formatMoney(settlement.amountMinor, group.currency)}
-                    </span>
-                    <span className="mt-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[0.65rem] font-semibold text-primary">
-                      {settlement.reversedAt ? "reversed" : "settled"}
-                    </span>
-                  </span>
-                  {canReverse && (
-                    <form action={reverseSettlementAction.bind(null, settlement.id)}>
-                      <Button type="submit" variant="ghost" size="sm">
-                        Undo
-                      </Button>
-                    </form>
-                  )}
-                </div>
+                <MemberDialog
+                  key={member.id}
+                  name={member.displayName}
+                  avatarColor={member.avatarColor}
+                  balance={amount}
+                  currency={group.currency}
+                  isSelf={isSelf}
+                  leaveAction={isSelf && !isOwner ? leaveGroupAction.bind(null, group.id) : undefined}
+                  deleteAction={isSelf && isOwner ? deleteGroupAction.bind(null, group.id) : undefined}
+                  removeAction={
+                    canRemove ? removeMemberAction.bind(null, group.id, member.id) : undefined
+                  }
+                  trigger={
+                    <button type="button" className={tileClass}>
+                      {contents}
+                    </button>
+                  }
+                />
               );
             })}
           </div>
-        </>
-      )}
+        </section>
 
-      <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
-        People
-      </p>
-      <div className="space-y-2">
-        {members.map((member) => (
-          <div key={member.id} className={`flex items-center gap-3 rounded-xl border border-border bg-card p-3 ${member.leftAt ? "opacity-55" : ""}`}>
-            <Avatar name={member.displayName} color={member.avatarColor} />
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-semibold">
-                {member.displayName}
-                {member.id === session.user.id ? " (you)" : ""}
-                {member.leftAt ? " · left" : ""}
-              </span>
-              <span className="mt-0.5 block text-xs text-muted-foreground">
-                {member.id === group.ownerId ? "Owner" : "Member"}
-              </span>
+        {/* On a phone: activity second. On desktop: the left column. */}
+        <section className="min-w-0 md:order-1 md:overflow-y-auto md:pr-2 md:pb-8">
+          <div className="mt-8 mb-3 md:mt-0">
+            <span className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+              Expenses
             </span>
-            {isOwner && member.id !== session.user.id && !member.leftAt && (
-              <form action={removeMemberAction.bind(null, group.id, member.id)}>
-                <Button type="submit" variant="ghost" size="sm">
-                  Remove
-                </Button>
-              </form>
-            )}
           </div>
-        ))}
-      </div>
 
-      {isOwner ? (
-        <form action={deleteGroupAction.bind(null, group.id)} className="mt-8">
-          <Button type="submit" variant="destructive" className="w-full">
-            Delete group
-          </Button>
-          <p className="mt-2 text-center text-xs text-muted-foreground">
-            It disappears for everyone. As the owner you cannot leave instead.
-          </p>
-        </form>
-      ) : (
-        <form action={leaveGroupAction.bind(null, group.id)} className="mt-8">
-          <Button type="submit" variant="destructive" className="w-full">
-            Leave group
-          </Button>
-          <p className="mt-2 text-center text-xs text-muted-foreground">
-            Leaving keeps your past expenses in the group&apos;s history.
-          </p>
-        </form>
-      )}
+          {expenses.items.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center">
+              <p className="text-sm text-muted-foreground">No expenses yet. Add the first one.</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {expenses.items.map((expense) => {
+                const payer = membersById.get(expense.paidByUserId);
+                const mine = expense.splits[session.user.id] ?? 0;
+                // Editing keeps the people who were on the expense, even if one
+                // of them has since left (rule 1).
+                const departed = departedMembers.filter(
+                  (member) =>
+                    member.id === expense.paidByUserId || expense.splits[member.id] !== undefined,
+                );
+                const dialogMembers = [...active, ...departed];
+                return (
+                  <ExpenseDialog
+                    key={expense.id}
+                    groupId={group.id}
+                    currency={group.currency}
+                    members={dialogMembers}
+                    viewerId={session.user.id}
+                    canEdit={canEditExpense(session.user.id, groupView, expense)}
+                    expense={{
+                      id: expense.id,
+                      title: expense.title,
+                      category: expense.category,
+                      amountMinor: expense.amountMinor,
+                      paidByUserId: expense.paidByUserId,
+                      spentOn: expense.spentOn,
+                      splits: expense.splits,
+                    }}
+                    trigger={
+                      <button
+                        type="button"
+                        className={`flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+                          expense.deletedAt ? "opacity-55" : ""
+                        }`}
+                      >
+                        <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-secondary text-muted-foreground">
+                          <CategoryIcon category={expense.category} className="size-4" />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className={`block truncate text-sm font-semibold ${expense.deletedAt ? "line-through" : ""}`}>
+                            {expense.title}
+                          </span>
+                          <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                            {payer?.displayName ?? "Someone"} paid · {expense.spentOn}
+                          </span>
+                        </span>
+                        <span className="shrink-0 text-right">
+                          <span className="block text-sm font-bold tabular-nums">
+                            {formatMoney(expense.amountMinor, group.currency)}
+                          </span>
+                          {expense.deletedAt ? (
+                            <span className="mt-1 inline-block rounded-full bg-secondary px-2 py-0.5 text-[0.65rem] font-semibold text-muted-foreground">
+                              deleted
+                            </span>
+                          ) : mine > 0 && expense.paidByUserId !== session.user.id ? (
+                            <span className="mt-1 inline-block rounded-full bg-destructive/15 px-2 py-0.5 text-[0.65rem] font-bold tabular-nums text-destructive">
+                              you owe {formatMoney(mine, group.currency)}
+                            </span>
+                          ) : null}
+                        </span>
+                        <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      </button>
+                    }
+                  />
+                );
+              })}
+
+              {expenses.nextCursor && (
+                <Link
+                  href={`/groups/${group.id}?before=${encodeURIComponent(expenses.nextCursor.toISOString())}`}
+                  className="block rounded-xl border border-border bg-card py-2.5 text-center text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Show earlier expenses
+                </Link>
+              )}
+            </div>
+          )}
+
+          {settlements.length > 0 && (
+            <>
+              <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                Settlements
+              </p>
+              <div className="space-y-2">
+                {settlements.map((settlement) => {
+                  const canReverse =
+                    !settlement.reversedAt &&
+                    canReverseSettlement(session.user.id, groupView, settlement);
+                  return (
+                    <div
+                      key={settlement.id}
+                      className={`flex items-center gap-3 rounded-xl border border-primary/20 bg-card p-3 ${
+                        settlement.reversedAt ? "opacity-55" : ""
+                      }`}
+                    >
+                      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+                        →
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className={`block truncate text-sm font-semibold ${settlement.reversedAt ? "line-through" : ""}`}>
+                          {membersById.get(settlement.fromUserId)?.displayName ?? "Someone"} paid{" "}
+                          {membersById.get(settlement.toUserId)?.displayName ?? "someone"}
+                        </span>
+                        <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                          {settlement.note}
+                        </span>
+                      </span>
+                      <span className="shrink-0 text-right">
+                        <span className="block text-sm font-bold tabular-nums">
+                          {formatMoney(settlement.amountMinor, group.currency)}
+                        </span>
+                        <span className="mt-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[0.65rem] font-semibold text-primary">
+                          {settlement.reversedAt ? "reversed" : "settled"}
+                        </span>
+                      </span>
+                      {canReverse && (
+                        <form action={reverseSettlementAction.bind(null, settlement.id)}>
+                          <Button type="submit" variant="ghost" size="sm">
+                            Undo
+                          </Button>
+                        </form>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

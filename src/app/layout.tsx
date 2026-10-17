@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   title: "EvenCost. Split costs. Settle once.",
   description:
-    "Split shared expenses in a group. Everyone adds what they paid, and EvenCost works out who owes whom and the simplest way to settle.",
+    "Split shared expenses in a group. Everyone adds what they paid, and EvenCost works out who owes whom and an optimized way to settle.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

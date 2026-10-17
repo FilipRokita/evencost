@@ -15,6 +15,7 @@ erDiagram
     groups ||--o{ invite_links : issues
     groups ||--o{ expenses : records
     groups ||--o{ settlements : records
+    groups ||--o{ expense_splits : scopes
     expenses ||--|{ expense_splits : divides
     users ||--o{ expense_splits : shares
     users ||--o{ expenses : pays
@@ -23,7 +24,6 @@ erDiagram
     users {
         uuid id PK
         text email UK "login only, never shown to others"
-        text passwordHash "Argon2id"
         text displayName "shown everywhere, not unique"
         text avatarColor "assigned at signup, never derived"
     }
@@ -70,6 +70,7 @@ erDiagram
     expense_splits {
         uuid expenseId PK "composite with userId"
         uuid userId PK "composite with expenseId"
+        uuid groupId FK "memberships, keeps the split in the expense's group"
         integer amountMinor "source of truth for balances"
     }
 
@@ -136,3 +137,8 @@ infer from the code.
 - **`expense_splits` must sum to `expenses.amountMinor`.** PostgreSQL cannot
   enforce that across tables, so it is checked in the domain and again inside the
   transaction (rule 9).
+- **Invalid money is refused by the database too.** `expenses.amount_minor > 0`,
+  `settlements.amount_minor > 0` and `settlements.from_user_id <> to_user_id`
+  are CHECK constraints, so an application bug cannot store a zero expense or a
+  transfer to oneself. The composite foreign key on `expense_splits` also proves
+  that every participant belongs to the expense's own group.

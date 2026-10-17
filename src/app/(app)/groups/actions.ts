@@ -1,12 +1,13 @@
 "use server";
 
 import { randomBytes } from "node:crypto";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/db";
 import { groups, inviteLinks, memberships } from "@/db/schema";
+import { CURRENCIES } from "@/domain/currencies";
 import type { FormState } from "@/lib/form-state";
 import { getGroupForViewer, loadBalances } from "@/lib/groups";
 import { requireSession } from "@/lib/session";
@@ -34,7 +35,7 @@ function invalid(groupId: string): never {
 const createSchema = z.object({
   name: z.string().trim().min(1, "Give the group a name.").max(60, "At most 60 characters."),
   description: z.string().trim().max(200, "At most 200 characters."),
-  currency: z.enum(["PLN", "EUR", "USD", "GBP"]),
+  currency: z.enum(CURRENCIES),
 });
 
 export async function createGroupAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -114,13 +115,26 @@ export async function removeMemberAction(groupId: string, userId: string): Promi
   if (!group || group.ownerId !== session.user.id) invalid(groupId);
   if (userId === session.user.id) invalid(groupId);
 
-  const balances = await loadBalances(groupId);
-  if ((balances[userId] ?? 0) !== 0) invalid(groupId);
+  await db.transaction(async (tx) => {
+    // The balance read and the leave must see the same state, or a concurrent
+    // change could leave the group with an unreachable debt (rule 1).
+    await tx.execute(sql`SELECT 1 FROM ${groups} WHERE ${groups.id} = ${groupId} FOR UPDATE`);
 
-  await db
-    .update(memberships)
-    .set({ leftAt: new Date() })
-    .where(and(eq(memberships.groupId, groupId), eq(memberships.userId, userId)));
+    const [target] = await tx
+      .select({ leftAt: memberships.leftAt })
+      .from(memberships)
+      .where(and(eq(memberships.groupId, groupId), eq(memberships.userId, userId)))
+      .limit(1);
+    if (!target || target.leftAt) invalid(groupId);
+
+    const balances = await loadBalances(groupId, tx);
+    if ((balances[userId] ?? 0) !== 0) invalid(groupId);
+
+    await tx
+      .update(memberships)
+      .set({ leftAt: new Date() })
+      .where(and(eq(memberships.groupId, groupId), eq(memberships.userId, userId)));
+  });
 
   revalidatePath(`/groups/${groupId}`);
 }

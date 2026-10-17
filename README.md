@@ -1,7 +1,7 @@
 # 💸 EvenCost
 
 Split shared expenses in a group — a trip, a flat, a project. Everyone adds what
-they paid, and EvenCost works out who owes whom and the simplest way to settle.
+they paid, and EvenCost works out who owes whom and an optimized way to settle.
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
@@ -9,8 +9,8 @@ they paid, and EvenCost works out who owes whom and the simplest way to settle.
 ![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-1C1C1C?logo=drizzle&logoColor=C5F74F)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
 
-> 🚧 **Early development.** The landing is up. Accounts, groups and the rest of
-> the app are being built stage by stage.
+> 🧪 **Built and tested, not deployed yet.** Accounts, groups, expenses and
+> settlement all work; the only roadmap item left is putting it on a host.
 
 ## ✨ What it does
 
@@ -26,10 +26,10 @@ they paid, and EvenCost works out who owes whom and the simplest way to settle.
 Settlement is a recorded transfer, not a checkbox, so paying back half of what
 you owe works properly.
 
-**Dark by default, built phone-first — but not phone-only.** On a phone it is
-bottom navigation and sheets, made for the end of the trip. Open it on a laptop
-and it becomes a two-column layout: expenses on the left, balances and settle-up
-on the right.
+**Dark by default, built phone-first — but not phone-only.** On a phone it is a
+back arrow, bottom sheets and thumb-sized actions, made for the end of the trip.
+Open it on a laptop and it becomes a two-column layout: expenses on the left,
+balances and people on the right.
 
 ## 🧱 Stack
 
@@ -88,9 +88,8 @@ Everything runs inside the dev container; nothing is installed on your machine.
 4. **Start the dev server** — `npm run dev`, then open
    [http://localhost:3000](http://localhost:3000).
 
-Dependencies are not on this list on purpose: the container runs `npm install`
-itself. Migrations join it at the database stage, once there is something to
-migrate.
+Dependencies are installed on create, and migrations run on create and on every
+start. Neither is a step you run by hand.
 
 ## ☁️ Run it on a host
 
@@ -116,9 +115,8 @@ commented out for one or the other.
    no separate step and nothing to run by hand.
 
 **One caveat worth knowing:** sign-in throttling counts per process, which on a
-serverless host protects nothing. Back it with Upstash Redis, or accept that the
-login endpoint is unthrottled. [.env.example](.env.example) lists the two
-variables.
+serverless host protects nothing. A shared Upstash store is not built yet, so
+production sign-in is effectively unthrottled until it is.
 
 ## 🗺️ Roadmap
 

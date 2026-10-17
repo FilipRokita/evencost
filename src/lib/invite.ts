@@ -1,14 +1,22 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
-import { inviteLinks, memberships } from "@/db/schema";
+import { groups, inviteLinks, memberships } from "@/db/schema";
 
 /**
  * An expired link and a revoked link are the same answer. Both mean "this link
  * does not work any more", and the person opening it can do nothing about it
- * (rule 13).
+ * (rule 13). A deleted group's link is dead too, or joining it would create a
+ * membership in a group nobody can open.
  */
 export async function findUsableInvite(token: string) {
-  const [invite] = await db.select().from(inviteLinks).where(eq(inviteLinks.token, token)).limit(1);
+  const [row] = await db
+    .select({ invite: inviteLinks })
+    .from(inviteLinks)
+    .innerJoin(groups, eq(groups.id, inviteLinks.groupId))
+    .where(and(eq(inviteLinks.token, token), isNull(groups.deletedAt)))
+    .limit(1);
+
+  const invite = row?.invite;
   if (!invite || invite.revokedAt) return null;
   if (invite.expiresAt.getTime() <= Date.now()) return null;
   return invite;
@@ -41,6 +49,8 @@ export async function joinByToken(token: string, userId: string): Promise<string
     return invite.groupId;
   }
 
-  await db.insert(memberships).values({ groupId: invite.groupId, userId });
+  // Two clicks on the same link can race; the composite primary key makes the
+  // second insert a no-op instead of an error (rule 11).
+  await db.insert(memberships).values({ groupId: invite.groupId, userId }).onConflictDoNothing();
   return invite.groupId;
 }

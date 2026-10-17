@@ -1,12 +1,16 @@
 import Link from "next/link";
+import { UsersRound } from "lucide-react";
+import { Avatar } from "@/components/avatar";
 import { Logo } from "@/components/logo";
 import { GroupTile } from "@/components/group-tile";
 import { NewGroupDialog } from "@/components/new-group-dialog";
-import { Button } from "@/components/ui/button";
+import { ProfileDialog } from "@/components/profile-dialog";
 import { outstandingTotal } from "@/domain/balances";
 import { listGroupsForViewer, listMembers, loadBalances } from "@/lib/groups";
 import { requireSession } from "@/lib/session";
-import { signOutAction } from "../actions";
+
+// Everything here waits on the session; a placeholder would only flash.
+export const instant = false;
 
 export default async function DashboardPage() {
   const session = await requireSession();
@@ -28,22 +32,35 @@ export default async function DashboardPage() {
       };
     }),
   );
+  const avatarColor = session.user.avatarColor ?? undefined;
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-lg px-4 pb-16">
-      <header className="flex items-center gap-3 py-4">
+    <main className="mx-auto min-h-dvh w-full max-w-lg px-4 pb-16 md:max-w-5xl md:px-7">
+      <header className="flex items-center gap-3 py-4 md:pt-7">
         <Link href="/dashboard" className="flex items-center gap-2 text-base font-extrabold tracking-tight">
           <Logo />
           EvenCost
         </Link>
-        <form action={signOutAction} className="ml-auto">
-          <Button type="submit" variant="ghost" size="sm">
-            Sign out
-          </Button>
-        </form>
+        <div className="ml-auto">
+          <ProfileDialog
+            name={session.user.name}
+            avatarColor={avatarColor}
+            trigger={
+              <button
+                type="button"
+                aria-label="Open your profile"
+                className="rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                <Avatar name={session.user.name} color={avatarColor} />
+              </button>
+            }
+          />
+        </div>
       </header>
 
-      <h1 className="mt-2 text-[1.7rem] font-extrabold tracking-tight">Hey, {session.user.name} 👋</h1>
+      <h1 className="mt-2 text-[1.7rem] font-extrabold tracking-tight">
+        Hey, {session.user.name}
+      </h1>
       <p className="mt-1 text-sm text-muted-foreground">Split it. Settle it. Forget it.</p>
 
       <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
@@ -52,8 +69,8 @@ export default async function DashboardPage() {
 
       {tiles.length === 0 && (
         <div className="mb-3 flex flex-col items-center rounded-2xl border border-dashed border-border px-6 py-10 text-center">
-          <span className="text-3xl" aria-hidden="true">
-            💸
+          <span className="grid size-12 place-items-center rounded-2xl bg-secondary text-muted-foreground">
+            <UsersRound className="size-6" aria-hidden="true" />
           </span>
           <h2 className="mt-3 text-base font-bold">No groups yet</h2>
           <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
@@ -62,7 +79,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <div className="grid gap-3">
+      <div className="grid gap-3 md:grid-cols-2">
         {tiles.map(({ group, members, balance, outstanding }) => (
           <GroupTile
             key={group.id}

@@ -10,7 +10,7 @@ import { AuthForm } from "./auth-form";
 export const instant = false;
 
 export default async function SignInPage({ searchParams }: PageProps<"/signin">) {
-  const { callbackUrl } = await searchParams;
+  const { callbackUrl, mode } = await searchParams;
   // Reading the session needs a request, so this page cannot be prerendered.
   await connection();
   // Already signed in: nothing to do here.
@@ -23,14 +23,10 @@ export default async function SignInPage({ searchParams }: PageProps<"/signin">)
         EvenCost
       </Link>
 
-      <h1 className="text-2xl font-extrabold tracking-tight">
-        Create your account
-      </h1>
-      <p className="mt-1 mb-6 text-sm text-muted-foreground">
-        One account, every group you&apos;ll ever join.
-      </p>
-
-      <AuthForm callbackUrl={typeof callbackUrl === "string" ? callbackUrl : undefined} />
+      <AuthForm
+        callbackUrl={typeof callbackUrl === "string" ? callbackUrl : undefined}
+        initialMode={mode === "signin" ? "signin" : "signup"}
+      />
     </main>
   );
 }

@@ -66,7 +66,7 @@ export async function listGroupsForViewer(viewerId: string): Promise<GroupRow[]>
       and(eq(memberships.groupId, groups.id), eq(memberships.userId, viewerId)),
     )
     .where(and(isNull(groups.deletedAt), isNull(memberships.leftAt)))
-    .orderBy(groups.createdAt);
+    .orderBy(desc(groups.createdAt));
 
   return rows.map((row) => row.group);
 }
@@ -157,7 +157,17 @@ export async function listExpenses(
   const limit = options.limit ?? 50;
 
   const rows = await db
-    .select()
+    .select({
+      id: expenses.id,
+      title: expenses.title,
+      category: expenses.category,
+      amountMinor: expenses.amountMinor,
+      paidByUserId: expenses.paidByUserId,
+      createdByUserId: expenses.createdByUserId,
+      spentOn: expenses.spentOn,
+      deletedAt: expenses.deletedAt,
+      createdAt: expenses.createdAt,
+    })
     .from(expenses)
     .where(
       and(
@@ -174,7 +184,11 @@ export async function listExpenses(
   if (page.length === 0) return { items: [], nextCursor: null };
 
   const splitRows = await db
-    .select()
+    .select({
+      expenseId: expenseSplits.expenseId,
+      userId: expenseSplits.userId,
+      amountMinor: expenseSplits.amountMinor,
+    })
     .from(expenseSplits)
     .where(inArray(expenseSplits.expenseId, page.map((row) => row.id)));
 

@@ -39,6 +39,7 @@ function readSplit(formData: FormData): { input: SplitInput } | { error: string 
 
   if (participants.length === 0) return { error: "Pick at least one person." };
   if (mode === "equal") return { input: { mode: "equal", participants } };
+  if (mode !== "exact" && mode !== "percent") return { error: "Pick a split mode." };
 
   const parts: Record<string, number> = {};
   for (const userId of participants) {
@@ -90,10 +91,36 @@ export async function saveExpenseAction(_prev: FormState, formData: FormData): P
     ownerId: group.ownerId,
     members: members.map((member) => ({ userId: member.id, leftAt: member.leftAt })),
   };
-  const activeIds = new Set(members.filter((member) => member.leftAt === null).map((member) => member.id));
+  const activeIds = new Set(
+    members.filter((member) => member.leftAt === null).map((member) => member.id),
+  );
+
+  const expenseId = field(formData, "expenseId");
+  const category = parsed.data.category as Category;
+
+  // A new expense can only involve active members. An edit may also keep the
+  // people already on that expense, so a departure does not freeze history
+  // (rule 1). The form is never the boundary; both cases are enforced here.
+  const allowedIds = new Set(activeIds);
+  if (expenseId) {
+    const [existing] = await db.select().from(expenses).where(eq(expenses.id, expenseId)).limit(1);
+    if (!existing || existing.groupId !== groupId) {
+      return { error: "That expense is not in this group." };
+    }
+    if (!canEditExpense(session.user.id, groupView, existing)) {
+      return { error: "Only the person who added it, or the group owner, can change this." };
+    }
+
+    const existingSplits = await db
+      .select({ userId: expenseSplits.userId })
+      .from(expenseSplits)
+      .where(eq(expenseSplits.expenseId, expenseId));
+    allowedIds.add(existing.paidByUserId);
+    for (const split of existingSplits) allowedIds.add(split.userId);
+  }
 
   const paidByUserId = field(formData, "paidByUserId");
-  if (!activeIds.has(paidByUserId)) {
+  if (!allowedIds.has(paidByUserId)) {
     return { fieldErrors: { paidByUserId: ["The payer has to be in the group."] } };
   }
 
@@ -102,7 +129,7 @@ export async function saveExpenseAction(_prev: FormState, formData: FormData): P
 
   const participants =
     split.input.mode === "equal" ? split.input.participants : Object.keys(split.input.parts);
-  if (participants.some((id) => !activeIds.has(id))) {
+  if (participants.some((id) => !allowedIds.has(id))) {
     return { error: "Everyone in the split has to be in the group." };
   }
 
@@ -112,21 +139,6 @@ export async function saveExpenseAction(_prev: FormState, formData: FormData): P
     // Belt and braces: the domain promises this, and the transaction must never
     // store splits that disagree with the amount (rule 9).
     return { error: "The split does not add up." };
-  }
-
-  const expenseId = field(formData, "expenseId");
-  const category = parsed.data.category as Category;
-
-  // The permission check happens before the transaction, so an unauthorised call
-  // fails loudly instead of quietly doing nothing.
-  if (expenseId) {
-    const [existing] = await db.select().from(expenses).where(eq(expenses.id, expenseId)).limit(1);
-    if (!existing || existing.groupId !== groupId) {
-      return { error: "That expense is not in this group." };
-    }
-    if (!canEditExpense(session.user.id, groupView, existing)) {
-      return { error: "Only the person who added it, or the group owner, can change this." };
-    }
   }
 
   await db.transaction(async (tx) => {
@@ -147,6 +159,7 @@ export async function saveExpenseAction(_prev: FormState, formData: FormData): P
       await tx.insert(expenseSplits).values(
         Object.entries(result.splits).map(([userId, amountMinor]) => ({
           expenseId,
+          groupId,
           userId,
           amountMinor,
         })),
@@ -170,6 +183,7 @@ export async function saveExpenseAction(_prev: FormState, formData: FormData): P
     await tx.insert(expenseSplits).values(
       Object.entries(result.splits).map(([userId, amountMinor]) => ({
         expenseId: created.id,
+        groupId,
         userId,
         amountMinor,
       })),

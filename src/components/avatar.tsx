@@ -7,7 +7,7 @@ export function Avatar({
   className,
 }: {
   name: string;
-  color: string;
+  color?: string;
   className?: string;
 }) {
   const tone = AVATAR_CLASS[color as AvatarColor] ?? AVATAR_CLASS.teal;
