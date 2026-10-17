@@ -51,7 +51,7 @@ change. Not a code change.
 Not a feature list. Each line is something you can check in the code, with the
 file that proves it.
 
-| | |
+| Claim | Proof |
 | :--- | :--- |
 | **Business rules know nothing about the framework** | Splits, balances, netting and permissions are plain TypeScript with no Next.js, React or database imports. [src/domain/](src/domain/) |
 | **Every action authorizes itself** | A Server Action is a public POST endpoint, so each one checks the session, validates its input and re-checks ownership. Hiding a button is never the boundary. [groups/actions.ts](<src/app/(app)/groups/actions.ts>) |
