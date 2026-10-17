@@ -46,6 +46,21 @@ The app reads its database from a single environment variable, so swapping the
 local Postgres for a hosted one (Neon, Supabase) is a config change — not a code
 change.
 
+## 🔧 How it's built
+
+Not a feature list. Each line is something you can check in the code, with the
+file that proves it.
+
+| | |
+| :--- | :--- |
+| **Business rules know nothing about the framework** | Splits, balances, netting and permissions are plain TypeScript with no Next.js, React or database imports. [src/domain/](src/domain/) |
+| **Every action authorizes itself** | A Server Action is a public POST endpoint, so each one checks the session, validates its input and re-checks ownership. Hiding a button is never the boundary. [groups/actions.ts](src/app/(app)/groups/actions.ts) |
+| **Money is never a float** | Integer minor units everywhere; the form and the server run the same split function, and the server re-checks the sum before storing. [splits.ts](src/domain/splits.ts) |
+| **Deletes are soft** | Expenses, memberships, settlements and groups are marked, never removed, so history and balances stay correct. [schema.ts](src/db/schema.ts) |
+| **Tests run the real arithmetic** | Property tests over random amounts and party sizes, plus an integration test that races two settle-ups against a real Postgres. [src/domain/](src/domain/) · [settle.test.ts](src/lib/settle.test.ts) |
+| **Dark, tabular, colour-blind safe** | Amounts use tabular figures, and green/red always comes with a sign and a word, never colour alone. [globals.css](src/app/globals.css) |
+| **One codebase, two environments** | Local container and host differ only in environment variables; there is no "am I deployed" branch anywhere. |
+
 ## 🚀 Run it locally
 
 Everything runs inside the dev container; nothing is installed on your machine.
@@ -85,7 +100,7 @@ migrate.
 - [x] Auth
 - [x] Groups and invites
 - [x] Expenses
-- [ ] Settlement
+- [x] Settlement
 - [ ] Deploy
 
 ## 📚 Documentation

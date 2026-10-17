@@ -2,12 +2,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { CategoryIcon } from "@/components/category-icon";
-import { canEditExpense } from "@/domain/permissions";
+import { canEditExpense, canReverseSettlement } from "@/domain/permissions";
+import { netting } from "@/domain/netting";
 import { ExpenseDialog } from "./expense-dialog";
+import { SettleDialog } from "./settle-dialog";
+import { reverseSettlementAction } from "./settlement-actions";
 import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/domain/money";
-import { getActiveInvite, getGroupForViewer, listExpenses, listMembers, loadBalances } from "@/lib/groups";
+import { getActiveInvite, getGroupForViewer, listExpenses, listMembers, listSettlements, loadBalances } from "@/lib/groups";
 import { requireSession } from "@/lib/session";
 import { leaveGroupAction, regenerateInviteAction } from "../actions";
 import { InvitePanel } from "./invite-panel";
@@ -23,12 +26,15 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
   if (!group) notFound();
 
   const cursor = typeof before === "string" ? new Date(before) : undefined;
-  const [members, balances, invite, expenses] = await Promise.all([
+  const [members, balances, invite, expenses, settlements] = await Promise.all([
     listMembers(group.id),
     loadBalances(group.id),
     getActiveInvite(group.id),
     listExpenses(group.id, { before: cursor && !Number.isNaN(cursor.getTime()) ? cursor : undefined }),
+    listSettlements(group.id),
   ]);
+  // Suggest only when something is actually outstanding.
+  const transfers = Object.values(balances).some((value) => value !== 0) ? netting(balances) : [];
   const active = members.filter((member) => member.leftAt === null);
   const groupView = {
     ownerId: group.ownerId,
@@ -115,6 +121,22 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
             </div>
           );
         })}
+      </div>
+
+      <div className="mt-4">
+        <SettleDialog
+          groupId={group.id}
+          currency={group.currency}
+          members={active}
+          transfers={transfers}
+          trigger={
+            <Button className="w-full" size="lg" variant={transfers.length > 0 ? "default" : "secondary"}>
+              {transfers.length > 0
+                ? `Settle up: ${transfers.length} transfer${transfers.length === 1 ? "" : "s"} suggested`
+                : "All settled"}
+            </Button>
+          }
+        />
       </div>
 
       <div className="mt-8 mb-3 flex items-center justify-between">
@@ -204,6 +226,57 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
             </Link>
           )}
         </div>
+      )}
+
+      {settlements.length > 0 && (
+        <>
+          <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+            Settlements
+          </p>
+          <div className="space-y-2">
+            {settlements.map((settlement) => {
+              const canReverse =
+                !settlement.reversedAt &&
+                canReverseSettlement(session.user.id, groupView, settlement);
+              return (
+                <div
+                  key={settlement.id}
+                  className={`flex items-center gap-3 rounded-xl border border-primary/20 bg-card p-3 ${
+                    settlement.reversedAt ? "opacity-55" : ""
+                  }`}
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+                    →
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className={`block truncate text-sm font-semibold ${settlement.reversedAt ? "line-through" : ""}`}>
+                      {members.find((m) => m.id === settlement.fromUserId)?.displayName ?? "Someone"} paid{" "}
+                      {members.find((m) => m.id === settlement.toUserId)?.displayName ?? "someone"}
+                    </span>
+                    <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                      {settlement.note}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-right">
+                    <span className="block text-sm font-bold tabular-nums">
+                      {formatMoney(settlement.amountMinor, group.currency)}
+                    </span>
+                    <span className="mt-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[0.65rem] font-semibold text-primary">
+                      {settlement.reversedAt ? "reversed" : "settled"}
+                    </span>
+                  </span>
+                  {canReverse && (
+                    <form action={reverseSettlementAction.bind(null, settlement.id)}>
+                      <Button type="submit" variant="ghost" size="sm">
+                        Undo
+                      </Button>
+                    </form>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
       )}
 
       {!isOwner && (

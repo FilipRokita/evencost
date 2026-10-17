@@ -76,16 +76,21 @@ export async function listGroupsForViewer(viewerId: string): Promise<GroupRow[]>
  * stored balance to read (see src/domain/balances.ts), so this joins the rows and
  * hands them to the pure function.
  */
-export async function loadBalances(groupId: string): Promise<Record<string, MinorUnits>> {
+type Queryable = Pick<typeof db, "select">;
+
+export async function loadBalances(
+  groupId: string,
+  executor: Queryable = db,
+): Promise<Record<string, MinorUnits>> {
   const [expenseRows, splitRows, settlementRows, memberRows] = await Promise.all([
-    db.select().from(expenses).where(and(eq(expenses.groupId, groupId), isNull(expenses.deletedAt))),
-    db
+    executor.select().from(expenses).where(and(eq(expenses.groupId, groupId), isNull(expenses.deletedAt))),
+    executor
       .select({ expenseId: expenseSplits.expenseId, userId: expenseSplits.userId, amountMinor: expenseSplits.amountMinor })
       .from(expenseSplits)
       .innerJoin(expenses, eq(expenses.id, expenseSplits.expenseId))
       .where(eq(expenses.groupId, groupId)),
-    db.select().from(settlements).where(eq(settlements.groupId, groupId)),
-    db.select({ userId: memberships.userId }).from(memberships).where(eq(memberships.groupId, groupId)),
+    executor.select().from(settlements).where(eq(settlements.groupId, groupId)),
+    executor.select({ userId: memberships.userId }).from(memberships).where(eq(memberships.groupId, groupId)),
   ]);
 
   const splitsByExpense = new Map<string, { userId: string; amountMinor: number }[]>();
@@ -194,4 +199,33 @@ export async function listExpenses(
     })),
     nextCursor: hasMore ? page[page.length - 1].createdAt : null,
   };
+}
+
+export type SettlementListItem = {
+  id: string;
+  fromUserId: string;
+  toUserId: string;
+  amountMinor: number;
+  note: string;
+  reversedAt: Date | null;
+  createdAt: Date;
+};
+
+/** Newest first. Reversed rows stay here, struck through, as history. */
+export async function listSettlements(groupId: string): Promise<SettlementListItem[]> {
+  const rows = await db
+    .select()
+    .from(settlements)
+    .where(eq(settlements.groupId, groupId))
+    .orderBy(desc(settlements.createdAt));
+
+  return rows.map((row) => ({
+    id: row.id,
+    fromUserId: row.fromUserId,
+    toUserId: row.toUserId,
+    amountMinor: row.amountMinor,
+    note: row.note,
+    reversedAt: row.reversedAt,
+    createdAt: row.createdAt,
+  }));
 }

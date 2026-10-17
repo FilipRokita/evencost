@@ -7,6 +7,30 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+
+    # The integration tests exercise the row lock, so CI needs a real Postgres.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: evencost
+          POSTGRES_PASSWORD: evencost
+          POSTGRES_DB: evencost
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://evencost:evencost@localhost:5432/evencost
+      # Not secrets: the build only constructs the auth instance, it never signs
+      # anyone in. Real values live in the host's environment.
+      BETTER_AUTH_SECRET: ci-only-placeholder-secret-not-used-in-production
+      BETTER_AUTH_URL: http://localhost:3000
+
     steps:
       - uses: actions/checkout@v4
 
@@ -20,5 +44,8 @@ jobs:
       # Next 16 does not lint during build, so this has to be its own step.
       - run: npm run lint
       - run: npm run typecheck
+
+      # The tests assume the schema exists.
+      - run: npm run db:migrate
       - run: npm test
       - run: npm run build
