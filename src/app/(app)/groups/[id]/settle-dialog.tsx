@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -164,7 +165,7 @@ export function SettleDialog({
                       <span className="min-w-0 truncate text-sm font-semibold">
                         {name(transfer.fromUserId)}
                       </span>
-                      <span className="text-muted-foreground">→</span>
+                      <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
                       <Avatar
                         name={name(transfer.toUserId)}
                         color={color(transfer.toUserId)}

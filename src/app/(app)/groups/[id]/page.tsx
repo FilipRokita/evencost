@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
-import { ChevronRight, Handshake, Pencil, Plus } from "lucide-react";
+import { ArrowRight, ChevronRight, Handshake, Pencil, Plus } from "lucide-react";
 import { AnimateNewExpenses } from "@/components/animate-new-expenses";
 import { CategoryIcon } from "@/components/category-icon";
 import { canEditExpense, canReverseSettlement } from "@/domain/permissions";
@@ -266,7 +266,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                       }`}
                     >
                       <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
-                        →
+                        <ArrowRight className="size-4.5" aria-hidden="true" />
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className={`block truncate text-sm font-semibold ${settlement.reversedAt ? "line-through" : ""}`}>
