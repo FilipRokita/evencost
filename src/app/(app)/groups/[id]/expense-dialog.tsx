@@ -350,7 +350,15 @@ function ExpenseForm({
         </form>
 
         {editing && expense && canEdit && (
-          <form id={deleteFormId} action={deleteExpenseAction.bind(null, expense.id)} className="pt-1">
+          <form
+            id={deleteFormId}
+            action={async () => {
+              // Close first so the row's fade to the deleted state is visible.
+              onDone();
+              await deleteExpenseAction(expense.id);
+            }}
+            className="pt-1"
+          >
             <ConfirmSubmit
               formId={deleteFormId}
               label="Delete expense"

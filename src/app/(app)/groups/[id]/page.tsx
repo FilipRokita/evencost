@@ -260,7 +260,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                       <button
                         type="button"
                         data-expense-row=""
-                        className={`flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+                        className={`flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-all duration-300 hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none ${
                           expense.deletedAt ? "opacity-55" : ""
                         }`}
                       >
@@ -280,7 +280,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                             {formatMoney(expense.amountMinor, group.currency)}
                           </span>
                           {expense.deletedAt ? (
-                            <span className="mt-1 inline-block rounded-full bg-secondary px-2 py-0.5 text-[0.65rem] font-semibold text-muted-foreground">
+                            <span className="mt-1 inline-block animate-in rounded-full bg-secondary px-2 py-0.5 text-[0.65rem] font-semibold text-muted-foreground duration-200 fade-in zoom-in-95">
                               deleted
                             </span>
                           ) : mine > 0 && expense.paidByUserId !== session.user.id ? (
