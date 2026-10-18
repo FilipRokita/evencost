@@ -100,7 +100,7 @@ export default function Page() {
         </div>
       </nav>
 
-      <section className="relative isolate overflow-hidden pt-12 pb-10 text-center">
+      <section className="relative isolate pt-12 pb-10 text-center">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 -top-40 -z-10 h-[520px] bg-[radial-gradient(ellipse_50%_45%_at_50%_50%,rgba(52,211,153,0.18),transparent_65%)]"
