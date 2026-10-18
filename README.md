@@ -160,6 +160,17 @@ commented out for one or the other.
 4. **Deploy.** The build command applies migrations before building, so there is
    no separate step and nothing to run by hand.
 
+### 🌐 Live preview infrastructure
+
+The live demo is hosted using the following services:
+
+| Component | Provider | Details |
+| :--- | :--- | :--- |
+| **Application** | [Vercel](https://vercel.com) | Next.js serverless hosting, Server Actions, CI/CD from `main` |
+| **Database** | [Neon](https://neon.tech) | Serverless PostgreSQL 17 (AWS Frankfurt `eu-central-1`) |
+| **DNS & Domain** | [Cloudflare](https://cloudflare.com) | Domain management, DNS, SSL/TLS |
+| **Source Code** | [GitHub](https://github.com) | Repository and version control |
+
 **One caveat worth knowing:** sign-in throttling counts per process, which on a
 serverless host protects nothing. A shared Upstash store is not built yet, so
 production sign-in is effectively unthrottled until it is.
