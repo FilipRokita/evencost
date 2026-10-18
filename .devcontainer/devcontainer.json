@@ -27,6 +27,7 @@
 		"vscode": {
 		"extensions": [
 			"anthropic.claude-code",
+			"google.geminicodeassist",
 			"mtxr.sqltools",
 			"mtxr.sqltools-driver-pg",
 			"ritwickdey.LiveServer"
