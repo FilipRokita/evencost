@@ -24,32 +24,34 @@ export function GroupTopbar({ name, sentinelId }: { name: string; sentinelId: st
 
   return (
     <header className="sticky top-0 z-20 -mx-4 flex items-center gap-3 bg-background px-4 py-4 md:static md:mx-0 md:bg-transparent md:px-0 md:pt-7">
+      <div className="relative flex h-9 min-w-0 flex-1 items-center">
+        <Link
+          href="/dashboard"
+          tabIndex={scrolled ? -1 : undefined}
+          className={`absolute inset-0 flex items-center gap-2 text-base font-extrabold tracking-tight transition-opacity duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+            scrolled ? "pointer-events-none opacity-0" : "opacity-100"
+          }`}
+        >
+          <Logo />
+          EvenCost
+        </Link>
+
+        <span
+          aria-hidden="true"
+          className={`absolute inset-0 flex items-center overflow-hidden text-sm font-bold transition-opacity duration-150 ${
+            scrolled ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <span className="truncate">{name}</span>
+        </span>
+      </div>
+
       <Link
         href="/dashboard"
         aria-label="Back to your groups"
         className="grid size-9 place-items-center rounded-xl border border-border bg-card text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
-      </Link>
-
-      <span
-        aria-hidden="true"
-        className={`min-w-0 flex-1 truncate text-sm font-bold transition-opacity duration-150 ${
-          scrolled ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        {name}
-      </span>
-
-      <Link
-        href="/dashboard"
-        tabIndex={scrolled ? -1 : undefined}
-        className={`flex items-center gap-2 text-base font-extrabold tracking-tight transition-opacity duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
-          scrolled ? "pointer-events-none opacity-0" : "opacity-100"
-        }`}
-      >
-        <Logo />
-        EvenCost
       </Link>
 
       <div className="pointer-events-none absolute inset-x-0 top-full h-6 bg-linear-to-b from-background to-transparent md:hidden" />
