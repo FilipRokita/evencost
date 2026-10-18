@@ -20,7 +20,9 @@ export function AuthForm({
   const signup = mode === "signup";
 
   return (
-    <div>
+    // Reserve the taller sign-up height so switching tabs does not move the
+    // vertically centered card.
+    <div className="min-h-[29rem]">
       <h1 className="text-2xl font-extrabold tracking-tight">
         {signup ? "Create your account" : "Welcome back"}
       </h1>
