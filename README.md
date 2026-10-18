@@ -52,6 +52,7 @@ mental arithmetic, and no chasing people for small amounts.
 - [How it's built](#how-its-built)
 - [Run it locally](#run-it-locally)
 - [Run it on a host](#run-it-on-a-host)
+- [Infrastructure](#infrastructure)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -160,9 +161,13 @@ commented out for one or the other.
 4. **Deploy.** The build command applies migrations before building, so there is
    no separate step and nothing to run by hand.
 
-### 🌐 Live preview infrastructure
+**One caveat worth knowing:** sign-in throttling counts per process, which on a
+serverless host protects nothing. A shared Upstash store is not built yet, so
+production sign-in is effectively unthrottled until it is.
 
-The live demo is hosted using the following services:
+## 🌐 Infrastructure
+
+The live preview is deployed using the following cloud services:
 
 | Component | Provider | Details |
 | :--- | :--- | :--- |
@@ -170,10 +175,6 @@ The live demo is hosted using the following services:
 | **Database** | [Neon](https://neon.tech) | Serverless PostgreSQL 17 (AWS Frankfurt `eu-central-1`) |
 | **DNS & Domain** | [Cloudflare](https://cloudflare.com) | Domain management, DNS, SSL/TLS |
 | **Source Code** | [GitHub](https://github.com) | Repository and version control |
-
-**One caveat worth knowing:** sign-in throttling counts per process, which on a
-serverless host protects nothing. A shared Upstash store is not built yet, so
-production sign-in is effectively unthrottled until it is.
 
 ## 📚 Documentation
 
