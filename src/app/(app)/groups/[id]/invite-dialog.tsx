@@ -94,8 +94,8 @@ export function InviteDialog({
             </p>
 
             {regenerate && (
-              <form action={regenerate}>
-                <Button type="submit" variant="ghost" className="w-full">
+              <form action={regenerate} className="border-t border-border pt-4">
+                <Button type="submit" variant="secondary" className="w-full">
                   Revoke and regenerate
                 </Button>
               </form>
