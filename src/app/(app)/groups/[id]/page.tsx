@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
-import { ChevronRight, Plus } from "lucide-react";
+import { ChevronRight, Handshake, Plus } from "lucide-react";
 import { AnimateNewExpenses } from "@/components/animate-new-expenses";
 import { CategoryIcon } from "@/components/category-icon";
 import { canEditExpense, canReverseSettlement } from "@/domain/permissions";
@@ -117,6 +117,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
           transfers={transfers}
           trigger={
             <Button size="lg" className="w-full md:w-auto" variant="secondary">
+              <Handshake className="size-4" aria-hidden="true" />
               {transfers.length > 0
                 ? `Settle up: ${transfers.length} transfer${transfers.length === 1 ? "" : "s"}`
                 : "All settled"}
