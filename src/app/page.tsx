@@ -86,16 +86,16 @@ export default function Page() {
         </Link>
         <div className="ml-auto flex items-center gap-1">
           <Link
-            href="/signin?mode=signin"
-            className="rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            Log in
-          </Link>
-          <Link
             href="/signin?mode=signup"
             className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-[filter] hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Get started
+          </Link>
+          <Link
+            href="/signin?mode=signin"
+            className="rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            Log in
           </Link>
         </div>
       </nav>
