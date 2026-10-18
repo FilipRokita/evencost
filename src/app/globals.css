@@ -98,6 +98,9 @@
     }
   html {
     @apply font-sans;
+    /* Keep the scrollbar's space reserved so a page entry animation cannot
+       change the viewport width and shift centred content sideways. */
+    scrollbar-gutter: stable;
     }
   button:not(:disabled) {
     cursor: pointer;
