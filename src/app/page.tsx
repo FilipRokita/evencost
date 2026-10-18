@@ -143,14 +143,14 @@ export default function Page() {
           <div className="w-[220px] rounded-2xl border border-border bg-card p-3">
             <Graph
               edges={[
-                [0, 1], [0, 2], [0, 3], [0, 4], [1, 2],
-                [1, 3], [1, 4], [2, 3], [2, 4], [3, 4],
+                [0, 1], [1, 2], [2, 3], [3, 4], [0, 4],
+                [0, 3], [1, 3], [2, 4],
               ]}
               stroke="rgba(248,113,113,0.38)"
               width={1.4}
             />
             <p className="mt-2 text-center text-[0.7rem] font-bold uppercase tracking-[0.07em] text-destructive">
-              10 debts between 5 people
+              8 debts between 5 people
             </p>
           </div>
           <div className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-card font-bold text-primary">
