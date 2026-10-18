@@ -178,7 +178,7 @@ function ExpenseForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="title">What was it?</Label>
+            <Label htmlFor="title">Description</Label>
             <Input
               id="title"
               name="title"
@@ -207,7 +207,7 @@ function ExpenseForm({
                       : "border-border bg-secondary text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <CategoryIcon category={value} className="size-4" />
+                  <CategoryIcon category={value} className="text-xl leading-none" />
                 </button>
               ))}
             </div>
@@ -265,7 +265,7 @@ function ExpenseForm({
           </div>
 
           <div className="space-y-2">
-            <Label>Who&apos;s in?</Label>
+            <Label>Participants</Label>
             <div className="flex flex-wrap gap-2">
               {members.map((member) => (
                 <button

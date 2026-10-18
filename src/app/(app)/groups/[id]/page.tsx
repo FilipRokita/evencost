@@ -317,7 +317,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                         }`}
                       >
                         <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-secondary text-muted-foreground">
-                          <CategoryIcon category={expense.category} className="size-4" />
+                          <CategoryIcon category={expense.category} className="text-lg leading-none" />
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className={`block truncate text-sm font-semibold ${expense.deletedAt ? "line-through" : ""}`}>
