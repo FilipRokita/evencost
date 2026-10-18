@@ -52,7 +52,7 @@ mental arithmetic, and no chasing people for small amounts.
 - [How it's built](#how-its-built)
 - [Run it locally](#run-it-locally)
 - [Run it on a host](#run-it-on-a-host)
-- [Infrastructure](#infrastructure)
+- [Live preview infrastructure](#live-preview-infrastructure)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -165,7 +165,7 @@ commented out for one or the other.
 serverless host protects nothing. A shared Upstash store is not built yet, so
 production sign-in is effectively unthrottled until it is.
 
-## 🌐 Infrastructure
+## 🌐 Live preview infrastructure
 
 The live preview is deployed using the following cloud services:
 
