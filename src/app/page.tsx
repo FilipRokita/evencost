@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Handshake, Receipt, Scale } from "lucide-react";
+import { ArrowDown, ArrowRight, Handshake, Receipt, Scale } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 const NODES = [
@@ -139,7 +139,7 @@ export default function Page() {
           </Link>
         </div>
 
-        <div className="mx-auto mt-12 flex flex-wrap items-center justify-center gap-3.5">
+        <div className="mx-auto mt-12 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
           <div className="w-[220px] rounded-2xl border border-border bg-card p-3">
             <Graph
               edges={[
@@ -153,8 +153,9 @@ export default function Page() {
               10 debts between 5 people
             </p>
           </div>
-          <div className="grid size-11 place-items-center rounded-full border border-border bg-card font-bold text-primary">
-            →
+          <div className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-card font-bold text-primary">
+            <ArrowDown className="size-5 sm:hidden" aria-hidden="true" />
+            <ArrowRight className="hidden size-5 sm:block" aria-hidden="true" />
           </div>
           <div className="w-[220px] rounded-2xl border border-border bg-card p-3">
             <Graph
