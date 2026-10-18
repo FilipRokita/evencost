@@ -108,6 +108,13 @@ Lifecycle scripts run in sequence, so a failing `postCreateCommand` skips
 its signing key are unnecessary. Reach for PGDG only when a version other than
 Debian's is wanted.
 
+**HMR needs polling when the repo lives on a Windows drive.** The workspace is
+mounted into the container over 9p, which does not deliver inotify events. The
+`dev` script therefore runs webpack with `WATCHPACK_POLLING=true`; Turbopack only
+supports inotify, so with it a change stays invisible until the server restarts.
+The PostCSS config supplies the Tailwind processing that the Turbopack loader
+would otherwise handle.
+
 ## Dev only
 
 `dev-only/` is a gitignored scratch space for prototypes and mocks. It is not in

@@ -23,6 +23,7 @@ inside a folder is that folder's business, not this file's.
 | [`next.config.ts`](../next.config.ts) | Next configuration. Cache Components and the Tailwind Turbopack rule live here. |
 | [`tsconfig.json`](../tsconfig.json) | TypeScript config; `@/*` maps to `./src/*`. |
 | [`eslint.config.mjs`](../eslint.config.mjs) | ESLint 9 flat config. `next lint` no longer exists, so linting is its own command. |
+| [`postcss.config.mjs`](../postcss.config.mjs) | Tailwind's PostCSS plugin, which the webpack dev server needs to process the styles. |
 | [`drizzle/`](../drizzle/) | Generated SQL migrations and their snapshots. Committed, so the schema history is in git. |
 | [`drizzle.config.ts`](../drizzle.config.ts) | drizzle-kit configuration. Migrations connect through `DIRECT_URL`, never the pooled URL. |
 | [`vercel.json`](../vercel.json) | The host's build command: apply migrations when `DIRECT_URL` is set, then build; a failed migration stops the build. |
