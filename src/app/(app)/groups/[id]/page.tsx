@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
-import { ArrowLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
 import { AnimateNewExpenses } from "@/components/animate-new-expenses";
 import { CategoryIcon } from "@/components/category-icon";
-import { Logo } from "@/components/logo";
 import { canEditExpense, canReverseSettlement } from "@/domain/permissions";
 import { netting } from "@/domain/netting";
 import { ExpenseDialog } from "./expense-dialog";
@@ -19,6 +18,7 @@ import { formatMoney } from "@/domain/money";
 import { getActiveInvite, getGroupForViewer, listExpenses, listMembers, listSettlements, loadBalances } from "@/lib/groups";
 import { requireSession } from "@/lib/session";
 import { deleteGroupAction, leaveGroupAction, regenerateInviteAction, removeMemberAction } from "../actions";
+import { GroupTopbar } from "./group-topbar";
 import { InviteDialog } from "./invite-dialog";
 
 // The group lookup and membership check must finish before anything renders.
@@ -83,22 +83,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
 
   return (
     <main className="mx-auto min-h-dvh w-full max-w-lg px-4 pb-16 md:flex md:h-dvh md:max-w-5xl md:flex-col md:overflow-hidden md:px-7 md:pb-0">
-      <header className="flex items-center gap-3 py-4 md:pt-7">
-        <Link
-          href="/dashboard"
-          aria-label="Back to your groups"
-          className="grid size-9 place-items-center rounded-xl border border-border bg-card text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        >
-          <ArrowLeft className="size-4" aria-hidden="true" />
-        </Link>
-        <Link
-          href="/dashboard"
-          className="ml-auto flex items-center gap-2 text-base font-extrabold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        >
-          <Logo />
-          EvenCost
-        </Link>
-      </header>
+      <GroupTopbar name={group.name} sentinelId="group-actions" />
 
       <h1 className="mt-2 text-2xl font-extrabold tracking-tight">{group.name}</h1>
       <p className="mt-1 text-sm text-muted-foreground">
@@ -162,14 +147,11 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
               const activeMember = member.leftAt === null;
               const canRemove = isOwner && !isSelf && activeMember;
               const tappable = isSelf || canRemove;
-              const hover = isSelf
-                ? "hover:bg-accent"
-                : "hover:border-white/25 hover:bg-white/[0.03]";
-              const tileClass = `w-full rounded-xl border bg-card p-3 text-center ${
-                isSelf ? "border-primary" : "border-border"
-              } ${member.leftAt ? "opacity-75" : ""} ${
+              const tileClass = `w-full rounded-xl border border-border bg-card p-3 text-center ${
+                member.leftAt ? "opacity-75" : ""
+              } ${
                 tappable
-                  ? `transition-colors ${hover} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring`
+                  ? "transition-colors hover:border-white/25 hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                   : ""
               }`;
               const contents = (
