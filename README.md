@@ -47,14 +47,14 @@ mental arithmetic, and no chasing people for small amounts.
 
 ## 📖 Table of contents
 
-- [What it does](#what-it-does)
-- [Stack](#stack)
-- [How it's built](#how-its-built)
-- [Run it locally](#run-it-locally)
-- [Run it on a host](#run-it-on-a-host)
-- [Live preview infrastructure](#live-preview-infrastructure)
-- [Documentation](#documentation)
-- [License](#license)
+- [✨ What it does](#-what-it-does)
+- [🧱 Stack](#-stack)
+- [🔧 How it's built](#-how-its-built)
+- [🚀 Run it locally](#-run-it-locally)
+- [☁️ Run it on a host](#️-run-it-on-a-host)
+- [🌐 Live preview infrastructure](#-live-preview-infrastructure)
+- [📚 Documentation](#-documentation)
+- [📄 License](#-license)
 
 ## ✨ What it does
 
@@ -172,7 +172,7 @@ The live preview is deployed using the following cloud services:
 | Component | Provider | Details |
 | :--- | :--- | :--- |
 | **Application** | [Vercel](https://vercel.com) | Next.js serverless hosting, Server Actions, CI/CD from `main` |
-| **Database** | [Neon](https://neon.tech) | Serverless PostgreSQL 17 (AWS Frankfurt `eu-central-1`) |
+| **Database** | [Neon](https://neon.com) | Serverless PostgreSQL 17 (AWS Frankfurt `eu-central-1`) |
 | **Source Code** | [GitHub](https://github.com) | Repository and version control |
 
 ## 📚 Documentation
