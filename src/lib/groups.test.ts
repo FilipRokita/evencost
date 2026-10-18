@@ -51,6 +51,22 @@ describe("getGroupForViewer", () => {
       .where(and(eq(memberships.groupId, groupId), eq(memberships.userId, member)));
     expect(await getGroupForViewer(groupId, member)).toBeNull();
   });
+
+  it("reflects updated name, description, and currency for viewer", async () => {
+    const owner = await makeUser("Owner");
+    const member = await makeUser("Member");
+    const groupId = await makeGroup(owner, member);
+
+    await db
+      .update(groups)
+      .set({ name: "Updated Group", description: "New Description", currency: "EUR" })
+      .where(eq(groups.id, groupId));
+
+    const updated = await getGroupForViewer(groupId, owner);
+    expect(updated?.name).toBe("Updated Group");
+    expect(updated?.description).toBe("New Description");
+    expect(updated?.currency).toBe("EUR");
+  });
 });
 
 describe("listExpenses", () => {

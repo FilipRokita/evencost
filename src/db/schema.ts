@@ -130,7 +130,7 @@ export const groups = pgTable("groups", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   description: text("description").notNull().default(""),
-  // Immutable after creation. No edit path, so no migration case (decision 5).
+  // Editable by the owner without currency conversion.
   currency: char("currency", { length: 3 }).notNull(),
   ownerId: uuid("owner_id")
     .notNull()

@@ -73,6 +73,37 @@ export async function createGroupAction(_prev: FormState, formData: FormData): P
   redirect(`/groups/${groupId}`);
 }
 
+export async function updateGroupAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const session = await requireSession();
+  const groupId = field(formData, "groupId");
+  if (!z.uuid().safeParse(groupId).success) return { error: "Invalid group." };
+
+  const group = await getGroupForViewer(groupId, session.user.id);
+  if (!group || group.ownerId !== session.user.id) {
+    return { error: "Only the owner can edit this group." };
+  }
+
+  const parsed = createSchema.safeParse({
+    name: field(formData, "name"),
+    description: field(formData, "description"),
+    currency: field(formData, "currency"),
+  });
+  if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
+
+  await db
+    .update(groups)
+    .set({
+      name: parsed.data.name,
+      description: parsed.data.description,
+      currency: parsed.data.currency,
+    })
+    .where(eq(groups.id, groupId));
+
+  revalidatePath(`/groups/${groupId}`);
+  revalidatePath("/dashboard");
+  return { success: "Group updated." };
+}
+
 /** Revokes the current link and issues a new one, in one transaction. */
 export async function regenerateInviteAction(groupId: string): Promise<void> {
   const session = await requireSession();

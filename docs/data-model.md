@@ -32,7 +32,7 @@ erDiagram
         uuid id PK
         text name
         text description
-        char currency "immutable after creation"
+        char currency "editable by owner without conversion"
         uuid ownerId FK "users.id, single owner"
         timestamp deletedAt "soft delete"
         timestamp createdAt
@@ -127,7 +127,7 @@ infer from the code.
 | `users.avatarColor` | Stored, not derived. Computed from a list index it would repaint everyone when the list changes (rule 8b). |
 | `expenses.createdByUserId` | Ownership of an expense is the creator, never the payer. The payer has no edit rights (rule 8a). |
 | `*.deletedAt` / `*.leftAt` / `*.reversedAt` | Nothing that carries history is ever hard-deleted (decision 4). |
-| `groups.currency` | No edit path at all, so there is no migration case for changing it (decision 5). |
+| `groups.currency` | Editable by the owner without currency conversion. |
 
 ## What the diagram does not show
 

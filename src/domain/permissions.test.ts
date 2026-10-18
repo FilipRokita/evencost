@@ -3,6 +3,7 @@ import {
   canDeleteExpense,
   canDeleteGroup,
   canEditExpense,
+  canEditGroup,
   canLeaveGroup,
   canManageGroup,
   canReverseSettlement,
@@ -80,6 +81,8 @@ describe("the group itself", () => {
     expect(canManageGroup("owner", group)).toBe(true);
     expect(canManageGroup("member", group)).toBe(false);
     expect(canDeleteGroup("member", group)).toBe(false);
+    expect(canEditGroup("owner", group)).toBe(true);
+    expect(canEditGroup("member", group)).toBe(false);
   });
 
   it("lets anyone but the owner leave", () => {

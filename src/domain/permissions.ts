@@ -64,6 +64,10 @@ export function canDeleteGroup(actorId: string, group: GroupView): boolean {
   return canManageGroup(actorId, group);
 }
 
+export function canEditGroup(actorId: string, group: GroupView): boolean {
+  return canManageGroup(actorId, group);
+}
+
 /** Anyone but the owner: ownership is not transferable in v1. */
 export function canLeaveGroup(actorId: string, group: GroupView): boolean {
   return isActiveMember(group, actorId) && group.ownerId !== actorId;

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
-import { ChevronRight, Handshake, Plus } from "lucide-react";
+import { ChevronRight, Handshake, Pencil, Plus } from "lucide-react";
 import { AnimateNewExpenses } from "@/components/animate-new-expenses";
 import { CategoryIcon } from "@/components/category-icon";
 import { canEditExpense, canReverseSettlement } from "@/domain/permissions";
 import { netting } from "@/domain/netting";
+import { EditGroupDialog } from "./edit-group-dialog";
 import { ExpenseDialog } from "./expense-dialog";
 import { FloatingExpense } from "./floating-expense";
 import { MemberDialog } from "./member-dialog";
@@ -124,6 +125,20 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
             </Button>
           }
         />
+        {isOwner && (
+          <EditGroupDialog
+            groupId={group.id}
+            name={group.name}
+            description={group.description}
+            currency={group.currency}
+            trigger={
+              <Button size="lg" className="col-span-2 w-full md:col-auto md:w-auto" variant="secondary">
+                <Pencil className="size-4" aria-hidden="true" />
+                Edit group
+              </Button>
+            }
+          />
+        )}
       </div>
 
       <FloatingExpense
