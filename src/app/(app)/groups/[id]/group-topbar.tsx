@@ -27,6 +27,7 @@ export function GroupTopbar({ name, sentinelId }: { name: string; sentinelId: st
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <Link
           href="/dashboard"
+          aria-label="EvenCost dashboard"
           className="flex shrink-0 items-center gap-2 text-base font-extrabold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           <Logo />

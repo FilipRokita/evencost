@@ -332,7 +332,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                             {formatMoney(expense.amountMinor, group.currency)}
                           </span>
                           {expense.deletedAt ? (
-                            <span className="mt-1 inline-block animate-in rounded-full bg-secondary px-2 py-0.5 text-[0.65rem] font-semibold text-muted-foreground duration-200 fade-in zoom-in-95">
+                            <span className="mt-1 inline-block rounded-full bg-secondary px-2 py-0.5 text-[0.65rem] font-semibold text-muted-foreground">
                               deleted
                             </span>
                           ) : mine > 0 && expense.paidByUserId !== session.user.id ? (

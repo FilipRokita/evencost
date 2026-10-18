@@ -23,10 +23,10 @@ export function AnimateNewExpenses({ targetId }: { targetId: string }) {
       for (const record of records) {
         for (const node of record.addedNodes) {
           if (!(node instanceof HTMLElement)) continue;
-          const row = node.matches("[data-expense-row]")
-            ? node
-            : node.querySelector("[data-expense-row]");
-          row?.classList.add(...ANIMATION);
+          const rows = node.matches("[data-expense-row]")
+            ? [node]
+            : [...node.querySelectorAll("[data-expense-row]")];
+          for (const row of rows) row.classList.add(...ANIMATION);
         }
       }
     });
