@@ -11,6 +11,7 @@ import { ExpenseDialog } from "./expense-dialog";
 import { FloatingExpense } from "./floating-expense";
 import { MemberDialog } from "./member-dialog";
 import { SettleDialog } from "./settle-dialog";
+import { SettlementDialog } from "./settlement-dialog";
 import { reverseSettlementAction } from "./settlement-actions";
 import { Avatar } from "@/components/avatar";
 import { MemberStack } from "@/components/group-tile";
@@ -258,41 +259,58 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                   const canReverse =
                     !settlement.reversedAt &&
                     canReverseSettlement(session.user.id, groupView, settlement);
+                  const fromMember = membersById.get(settlement.fromUserId) ?? {
+                    displayName: "Someone",
+                    avatarColor: "teal",
+                  };
+                  const toMember = membersById.get(settlement.toUserId) ?? {
+                    displayName: "Someone",
+                    avatarColor: "teal",
+                  };
                   return (
-                    <div
+                    <SettlementDialog
                       key={settlement.id}
-                      className={`flex items-center gap-3 rounded-xl border border-primary/20 bg-card p-3 ${
-                        settlement.reversedAt ? "opacity-55" : ""
-                      }`}
-                    >
-                      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
-                        <ArrowRight className="size-4.5" aria-hidden="true" />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className={`block truncate text-sm font-semibold ${settlement.reversedAt ? "line-through" : ""}`}>
-                          {membersById.get(settlement.fromUserId)?.displayName ?? "Someone"} paid{" "}
-                          {membersById.get(settlement.toUserId)?.displayName ?? "someone"}
-                        </span>
-                        <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                          {settlement.note}
-                        </span>
-                      </span>
-                      <span className="shrink-0 text-right">
-                        <span className="block text-sm font-bold tabular-nums">
-                          {formatMoney(settlement.amountMinor, group.currency)}
-                        </span>
-                        <span className="mt-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[0.65rem] font-semibold text-primary">
-                          {settlement.reversedAt ? "reversed" : "settled"}
-                        </span>
-                      </span>
-                      {canReverse && (
-                        <form action={reverseSettlementAction.bind(null, settlement.id)}>
-                          <Button type="submit" variant="ghost" size="sm">
-                            Undo
-                          </Button>
-                        </form>
-                      )}
-                    </div>
+                      settlement={settlement}
+                      currency={group.currency}
+                      fromMember={fromMember}
+                      toMember={toMember}
+                      canReverse={canReverse}
+                      reverseAction={
+                        canReverse ? reverseSettlementAction.bind(null, settlement.id) : undefined
+                      }
+                      trigger={
+                        <button
+                          type="button"
+                          className={`flex w-full items-center gap-3 rounded-xl border border-primary/20 bg-card p-3 text-left transition-all duration-300 hover:border-primary/40 hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none ${
+                            settlement.reversedAt ? "opacity-55" : ""
+                          }`}
+                        >
+                          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+                            <ArrowRight className="size-4.5" aria-hidden="true" />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span
+                              className={`block truncate text-sm font-semibold ${
+                                settlement.reversedAt ? "line-through" : ""
+                              }`}
+                            >
+                              {fromMember.displayName} paid {toMember.displayName}
+                            </span>
+                            <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                              {settlement.note}
+                            </span>
+                          </span>
+                          <span className="shrink-0 text-right">
+                            <span className="block text-sm font-bold tabular-nums">
+                              {formatMoney(settlement.amountMinor, group.currency)}
+                            </span>
+                            <span className="mt-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[0.65rem] font-semibold text-primary">
+                              {settlement.reversedAt ? "reversed" : "settled"}
+                            </span>
+                          </span>
+                        </button>
+                      }
+                    />
                   );
                 }
 
