@@ -6,6 +6,7 @@ import { createGroupAction } from "@/app/(app)/groups/actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -40,8 +41,10 @@ export function NewGroupDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Fresh on every open, so an old error cannot appear on an empty form. */}
-        {open && <NewGroupForm />}
+        <DialogBody>
+          {/* Fresh on every open, so an old error cannot appear on an empty form. */}
+          {open && <NewGroupForm />}
+        </DialogBody>
       </DialogContent>
     </Dialog>
   );

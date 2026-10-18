@@ -5,6 +5,7 @@ import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -100,7 +101,8 @@ export function SettleDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {transfers.length > 0 && (
+        <DialogBody className="space-y-4">
+          {transfers.length > 0 && (
           <div className="space-y-2">
             {transfers.map((transfer, index) => {
               const key = transferKey(transfer);
@@ -149,7 +151,8 @@ export function SettleDialog({
               into the next time the sheet is opened. */}
           {open && <CustomTransferForm groupId={groupId} members={members} />}
         </div>
-      </DialogContent>
+      </DialogBody>
+    </DialogContent>
     </Dialog>
   );
 }

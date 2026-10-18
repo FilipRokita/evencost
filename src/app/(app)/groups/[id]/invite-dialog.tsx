@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -65,7 +66,8 @@ export function InviteDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {url ? (
+        <DialogBody className="space-y-4">
+          {url ? (
           <>
             <div className="flex items-center gap-2 rounded-lg bg-secondary px-3 py-2">
               <span className="min-w-0 flex-1 truncate font-mono text-xs text-muted-foreground">
@@ -117,6 +119,7 @@ export function InviteDialog({
             )}
           </div>
         )}
+        </DialogBody>
       </DialogContent>
     </Dialog>
   );

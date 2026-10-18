@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,
@@ -44,24 +45,26 @@ export function ConfirmSubmit({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <DialogClose asChild>
-            <Button type="button" variant="ghost">
-              Cancel
+        <DialogBody>
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <DialogClose asChild>
+              <Button type="button" variant="ghost">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => {
+                const form = document.getElementById(formId);
+                if (form instanceof HTMLFormElement) form.requestSubmit();
+                setOpen(false);
+              }}
+            >
+              {label}
             </Button>
-          </DialogClose>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={() => {
-              const form = document.getElementById(formId);
-              if (form instanceof HTMLFormElement) form.requestSubmit();
-              setOpen(false);
-            }}
-          >
-            {label}
-          </Button>
-        </div>
+          </div>
+        </DialogBody>
       </DialogContent>
     </Dialog>
   );

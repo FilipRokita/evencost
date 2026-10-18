@@ -5,6 +5,7 @@ import { updateGroupAction } from "@/app/(app)/groups/actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -40,15 +41,17 @@ export function EditGroupDialog({
           <DialogDescription>Change the group name, description, or currency.</DialogDescription>
         </DialogHeader>
 
-        {open && (
-          <EditGroupForm
-            groupId={groupId}
-            initialName={name}
-            initialDescription={description}
-            initialCurrency={currency}
-            onDone={() => setOpen(false)}
-          />
-        )}
+        <DialogBody>
+          {open && (
+            <EditGroupForm
+              groupId={groupId}
+              initialName={name}
+              initialDescription={description}
+              initialCurrency={currency}
+              onDone={() => setOpen(false)}
+            />
+          )}
+        </DialogBody>
       </DialogContent>
     </Dialog>
   );
@@ -67,6 +70,7 @@ function EditGroupForm({
   initialCurrency: string;
   onDone: () => void;
 }) {
+  const [selectedCurrency, setSelectedCurrency] = useState(initialCurrency);
   const [state, formAction, pending] = useActionState<FormState, FormData>(updateGroupAction, {});
 
   useEffect(() => {
@@ -105,7 +109,8 @@ function EditGroupForm({
         <select
           id="currency"
           name="currency"
-          defaultValue={initialCurrency}
+          value={selectedCurrency}
+          onChange={(e) => setSelectedCurrency(e.target.value)}
           className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           {CURRENCIES.map((c) => (
@@ -114,6 +119,11 @@ function EditGroupForm({
             </option>
           ))}
         </select>
+        {selectedCurrency !== initialCurrency && (
+          <p className="text-xs text-destructive">
+            Existing amounts will not be converted. Only the currency label changes.
+          </p>
+        )}
         {state.fieldErrors?.currency && (
           <p className="text-sm text-destructive">{state.fieldErrors.currency[0]}</p>
         )}

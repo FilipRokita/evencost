@@ -7,6 +7,7 @@ import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -77,61 +78,63 @@ function ProfileContent({ name, avatarColor }: { name: string; avatarColor?: str
     <>
       <DialogHeader>
         <DialogTitle>Profile</DialogTitle>
-        <DialogDescription>Your account, and the password that protects it.</DialogDescription>
+        <DialogDescription>Your account and password.</DialogDescription>
       </DialogHeader>
 
-      <div className="flex items-center gap-3 rounded-xl bg-secondary p-3">
-        <Avatar name={name} color={avatarColor} />
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold">{name}</p>
-          <p className="text-xs text-muted-foreground">This is how the group sees you.</p>
-        </div>
-      </div>
-
-      <form action={formAction} className="space-y-3 border-t border-border pt-4">
-        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
-          <KeyRound className="size-3.5" aria-hidden="true" />
-          Change password
-        </p>
-
-        {PASSWORD_FIELDS.map((field) => (
-          <div key={field.name} className="space-y-1.5">
-            <Label htmlFor={field.name}>{field.label}</Label>
-            <Input
-              id={field.name}
-              name={field.name}
-              type="password"
-              autoComplete={field.autoComplete}
-              placeholder={field.placeholder}
-            />
-            {state.fieldErrors?.[field.name]?.[0] && (
-              <p className="text-sm text-destructive">{state.fieldErrors[field.name][0]}</p>
-            )}
+      <DialogBody className="space-y-4">
+        <div className="flex items-center gap-3 rounded-xl bg-secondary p-3">
+          <Avatar name={name} color={avatarColor} />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold">{name}</p>
+            <p className="text-xs text-muted-foreground">This is how the group sees you.</p>
           </div>
-        ))}
+        </div>
 
-        {state.error && (
-          <p role="alert" className="text-sm font-semibold text-destructive">
-            {state.error}
+        <form action={formAction} className="space-y-3 border-t border-border pt-4">
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+            <KeyRound className="size-3.5" aria-hidden="true" />
+            Change password
           </p>
-        )}
-        {state.success && (
-          <p role="status" className="text-sm font-semibold text-primary">
-            {state.success}
-          </p>
-        )}
 
-        <Button type="submit" className="w-full" disabled={pending}>
-          {pending ? "Changing…" : "Change password"}
-        </Button>
-      </form>
+          {PASSWORD_FIELDS.map((field) => (
+            <div key={field.name} className="space-y-1.5">
+              <Label htmlFor={field.name}>{field.label}</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type="password"
+                autoComplete={field.autoComplete}
+                placeholder={field.placeholder}
+              />
+              {state.fieldErrors?.[field.name]?.[0] && (
+                <p className="text-sm text-destructive">{state.fieldErrors[field.name][0]}</p>
+              )}
+            </div>
+          ))}
 
-      <form action={signOutAction} className="border-t border-border pt-4">
-        <Button type="submit" variant="ghost" className="w-full">
-          <LogOut className="size-4" aria-hidden="true" />
-          Sign out
-        </Button>
-      </form>
+          {state.error && (
+            <p role="alert" className="text-sm font-semibold text-destructive">
+              {state.error}
+            </p>
+          )}
+          {state.success && (
+            <p role="status" className="text-sm font-semibold text-primary">
+              {state.success}
+            </p>
+          )}
+
+          <Button type="submit" className="w-full" disabled={pending}>
+            {pending ? "Changing…" : "Change password"}
+          </Button>
+        </form>
+
+        <form action={signOutAction} className="border-t border-border pt-4">
+          <Button type="submit" variant="ghost" className="w-full">
+            <LogOut className="size-4" aria-hidden="true" />
+            Sign out
+          </Button>
+        </form>
+      </DialogBody>
     </>
   );
 }

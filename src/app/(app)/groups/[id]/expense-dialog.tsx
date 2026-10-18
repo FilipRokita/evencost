@@ -7,6 +7,7 @@ import { ConfirmSubmit } from "@/components/confirm-submit";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -130,17 +131,18 @@ function ExpenseForm({
 
   return (
     <>
-        <DialogHeader>
-          <DialogTitle>{editing ? (canEdit ? "Edit expense" : "Expense") : "Add expense"}</DialogTitle>
-          <DialogDescription>
-            {!canEdit
-              ? "Only the person who added it, or the group owner, can change this."
-              : editing
-                ? "Saving replaces the split entirely. Balances recompute from it."
-                : "Who paid, how much, and how it is shared."}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogHeader>
+        <DialogTitle>{editing ? (canEdit ? "Edit expense" : "Expense") : "Add expense"}</DialogTitle>
+        <DialogDescription>
+          {!canEdit
+            ? "Only the creator or owner can edit this."
+            : editing
+              ? "Update expense details and split."
+              : "Who paid and how to split it."}
+        </DialogDescription>
+      </DialogHeader>
 
+      <DialogBody className="space-y-4">
         <form action={formAction} className="space-y-4">
           <input type="hidden" name="groupId" value={groupId} />
           {expense && <input type="hidden" name="expenseId" value={expense.id} />}
@@ -377,6 +379,7 @@ function ExpenseForm({
             </p>
           </form>
         )}
+      </DialogBody>
     </>
   );
 }

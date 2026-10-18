@@ -5,6 +5,7 @@ import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -59,10 +60,11 @@ export function MemberDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex items-center gap-3 rounded-xl bg-secondary p-3">
-          <Avatar name={name} color={avatarColor} />
-          <span className="min-w-0 truncate text-sm font-semibold">{name}</span>
-        </div>
+        <DialogBody className="space-y-4">
+          <div className="flex items-center gap-3 rounded-xl bg-secondary p-3">
+            <Avatar name={name} color={avatarColor} />
+            <span className="min-w-0 truncate text-sm font-semibold">{name}</span>
+          </div>
 
         {leaveAction && (
           <>
@@ -107,6 +109,7 @@ export function MemberDialog({
             </p>
           </>
         )}
+        </DialogBody>
       </DialogContent>
     </Dialog>
   );
