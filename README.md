@@ -173,7 +173,6 @@ The live preview is deployed using the following cloud services:
 | :--- | :--- | :--- |
 | **Application** | [Vercel](https://vercel.com) | Next.js serverless hosting, Server Actions, CI/CD from `main` |
 | **Database** | [Neon](https://neon.tech) | Serverless PostgreSQL 17 (AWS Frankfurt `eu-central-1`) |
-| **DNS & Domain** | [Cloudflare](https://cloudflare.com) | Domain management, DNS, SSL/TLS |
 | **Source Code** | [GitHub](https://github.com) | Repository and version control |
 
 ## 📚 Documentation
