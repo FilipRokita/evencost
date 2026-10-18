@@ -98,9 +98,30 @@
     }
   html {
     @apply font-sans;
+    color-scheme: dark;
     /* Keep the scrollbar's space reserved so a page entry animation cannot
        change the viewport width and shift centred content sideways. */
     scrollbar-gutter: stable;
+    }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+    }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+    }
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--accent);
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+    }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--muted-foreground);
     }
   button:not(:disabled) {
     cursor: pointer;

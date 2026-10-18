@@ -53,7 +53,7 @@ export function GroupTile({ id, name, currency, members, yourBalance, outstandin
   return (
     <Link
       href={`/groups/${id}`}
-      className="flex items-center gap-3.5 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="flex items-center gap-3.5 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-white/25 hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <MemberStack members={members} />
 

@@ -60,7 +60,7 @@ export default async function DashboardPage() {
               <button
                 type="button"
                 aria-label="Open your profile"
-                className="rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="rounded-full transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <Avatar name={session.user.name} color={avatarColor} />
               </button>
