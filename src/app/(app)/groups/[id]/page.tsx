@@ -116,7 +116,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
           members={balanceMembers}
           transfers={transfers}
           trigger={
-            <Button size="lg" className="w-full md:w-auto" variant={transfers.length > 0 ? "default" : "secondary"}>
+            <Button size="lg" className="w-full md:w-auto" variant="secondary">
               {transfers.length > 0
                 ? `Settle up: ${transfers.length} transfer${transfers.length === 1 ? "" : "s"}`
                 : "All settled"}
