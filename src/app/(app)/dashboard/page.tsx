@@ -6,8 +6,10 @@ import { GroupTile } from "@/components/group-tile";
 import { NewGroupDialog } from "@/components/new-group-dialog";
 import { ProfileDialog } from "@/components/profile-dialog";
 import { outstandingTotal } from "@/domain/balances";
+import { formatMoney } from "@/domain/money";
 import { listGroupsForViewer, listMembers, loadBalances } from "@/lib/groups";
 import { requireSession } from "@/lib/session";
+import { cn } from "@/lib/utils";
 
 // Everything here waits on the session; a placeholder would only flash.
 export const instant = false;
@@ -32,6 +34,15 @@ export default async function DashboardPage() {
       };
     }),
   );
+  // One chip per currency, as the balances cannot be added across currencies.
+  const overallByCurrency = new Map<string, number>();
+  for (const tile of tiles) {
+    overallByCurrency.set(
+      tile.group.currency,
+      (overallByCurrency.get(tile.group.currency) ?? 0) + tile.balance,
+    );
+  }
+  const overall = [...overallByCurrency.entries()].filter(([, balance]) => balance !== 0);
   const avatarColor = session.user.avatarColor ?? undefined;
 
   return (
@@ -62,6 +73,28 @@ export default async function DashboardPage() {
         Hey, {session.user.name}
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">Split it. Settle it. Forget it.</p>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {overall.length === 0 ? (
+          <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-muted-foreground">
+            You&apos;re all settled
+          </span>
+        ) : (
+          overall.map(([currency, balance]) => (
+            <span
+              key={currency}
+              className={cn(
+                "rounded-full px-3 py-1 text-xs font-bold tabular-nums",
+                balance > 0 ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive",
+              )}
+            >
+              {balance > 0
+                ? `+${formatMoney(balance, currency)} owed to you`
+                : `${formatMoney(Math.abs(balance), currency)} you owe`}
+            </span>
+          ))
+        )}
+      </div>
 
       <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
         Your groups
