@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
-import { ArrowLeft, ChevronRight, Link2, Plus } from "lucide-react";
+import { ArrowLeft, ChevronRight, Plus } from "lucide-react";
 import { AnimateNewExpenses } from "@/components/animate-new-expenses";
 import { CategoryIcon } from "@/components/category-icon";
+import { Logo } from "@/components/logo";
 import { canEditExpense, canReverseSettlement } from "@/domain/permissions";
 import { netting } from "@/domain/netting";
 import { ExpenseDialog } from "./expense-dialog";
@@ -59,6 +60,19 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
     members: members.map((member) => ({ userId: member.id, leftAt: member.leftAt })),
   };
   const isOwner = group.ownerId === session.user.id;
+  // One timeline, newest first, like the prototype.
+  const activity = [
+    ...expenses.items.map((expense) => ({
+      kind: "expense" as const,
+      date: expense.spentOn,
+      expense,
+    })),
+    ...settlements.map((settlement) => ({
+      kind: "settlement" as const,
+      date: settlement.createdAt.toISOString().slice(0, 10),
+      settlement,
+    })),
+  ].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
   const inviteUrl = invite
     ? new URL(`/invite/${invite.token}`, process.env.BETTER_AUTH_URL ?? "http://localhost:3000").toString()
     : null;
@@ -77,31 +91,25 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
         </Link>
-        <span className="ml-auto text-sm font-semibold text-muted-foreground">
-          {group.currency}
-        </span>
+        <Link
+          href="/dashboard"
+          className="ml-auto flex items-center gap-2 text-base font-extrabold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          <Logo />
+          EvenCost
+        </Link>
       </header>
 
       <h1 className="mt-2 text-2xl font-extrabold tracking-tight">{group.name}</h1>
-      {group.description && (
-        <p className="mt-1 text-sm text-muted-foreground">{group.description}</p>
-      )}
+      <p className="mt-1 text-sm text-muted-foreground">
+        {group.description ? `${group.description} · ${group.currency}` : group.currency}
+      </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <MemberStack members={active} />
         <span className="ml-1 text-sm text-muted-foreground">
           {active.length} {active.length === 1 ? "person" : "people"}
         </span>
-        <InviteDialog
-          url={inviteUrl}
-          regenerate={isOwner ? regenerateInvite : undefined}
-          trigger={
-            <Button variant="secondary" size="sm" className="ml-auto">
-              <Link2 className="size-3.5" aria-hidden="true" />
-              Invite
-            </Button>
-          }
-        />
       </div>
 
       <div id="group-actions" className="mt-4 grid grid-cols-2 gap-2 md:flex md:w-fit">
@@ -154,11 +162,14 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
               const activeMember = member.leftAt === null;
               const canRemove = isOwner && !isSelf && activeMember;
               const tappable = isSelf || canRemove;
+              const hover = isSelf
+                ? "hover:bg-accent"
+                : "hover:border-white/25 hover:bg-white/[0.03]";
               const tileClass = `w-full rounded-xl border bg-card p-3 text-center ${
                 isSelf ? "border-primary" : "border-border"
               } ${member.leftAt ? "opacity-75" : ""} ${
                 tappable
-                  ? "transition-colors hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  ? `transition-colors ${hover} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring`
                   : ""
               }`;
               const contents = (
@@ -211,6 +222,20 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                 />
               );
             })}
+
+            <InviteDialog
+              url={inviteUrl}
+              regenerate={isOwner ? regenerateInvite : undefined}
+              trigger={
+                <button
+                  type="button"
+                  className="flex min-h-[112px] w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                >
+                  <Plus className="size-5" aria-hidden="true" />
+                  Invite
+                </button>
+              }
+            />
           </div>
         </section>
 
@@ -219,17 +244,61 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
           <AnimateNewExpenses targetId="expenses-section" />
           <div className="mt-8 mb-3 md:mt-0">
             <span className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
-              Expenses
+              Activity
             </span>
           </div>
 
-          {expenses.items.length === 0 ? (
+          {activity.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center">
-              <p className="text-sm text-muted-foreground">No expenses yet. Add the first one.</p>
+              <p className="text-sm text-muted-foreground">No activity yet. Add the first expense.</p>
             </div>
           ) : (
             <div className="space-y-2">
-              {expenses.items.map((expense) => {
+              {activity.map((item) => {
+                if (item.kind === "settlement") {
+                  const settlement = item.settlement;
+                  const canReverse =
+                    !settlement.reversedAt &&
+                    canReverseSettlement(session.user.id, groupView, settlement);
+                  return (
+                    <div
+                      key={settlement.id}
+                      className={`flex items-center gap-3 rounded-xl border border-primary/20 bg-card p-3 ${
+                        settlement.reversedAt ? "opacity-55" : ""
+                      }`}
+                    >
+                      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+                        →
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className={`block truncate text-sm font-semibold ${settlement.reversedAt ? "line-through" : ""}`}>
+                          {membersById.get(settlement.fromUserId)?.displayName ?? "Someone"} paid{" "}
+                          {membersById.get(settlement.toUserId)?.displayName ?? "someone"}
+                        </span>
+                        <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                          {settlement.note}
+                        </span>
+                      </span>
+                      <span className="shrink-0 text-right">
+                        <span className="block text-sm font-bold tabular-nums">
+                          {formatMoney(settlement.amountMinor, group.currency)}
+                        </span>
+                        <span className="mt-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[0.65rem] font-semibold text-primary">
+                          {settlement.reversedAt ? "reversed" : "settled"}
+                        </span>
+                      </span>
+                      {canReverse && (
+                        <form action={reverseSettlementAction.bind(null, settlement.id)}>
+                          <Button type="submit" variant="ghost" size="sm">
+                            Undo
+                          </Button>
+                        </form>
+                      )}
+                    </div>
+                  );
+                }
+
+                const expense = item.expense;
                 const payer = membersById.get(expense.paidByUserId);
                 const mine = expense.splits[session.user.id] ?? 0;
                 // Editing keeps the people who were on the expense, even if one
@@ -260,7 +329,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                       <button
                         type="button"
                         data-expense-row=""
-                        className={`flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-all duration-300 hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none ${
+                        className={`flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-all duration-300 hover:border-white/25 hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none ${
                           expense.deletedAt ? "opacity-55" : ""
                         }`}
                       >
@@ -305,57 +374,6 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                 </Link>
               )}
             </div>
-          )}
-
-          {settlements.length > 0 && (
-            <>
-              <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                Settlements
-              </p>
-              <div className="space-y-2">
-                {settlements.map((settlement) => {
-                  const canReverse =
-                    !settlement.reversedAt &&
-                    canReverseSettlement(session.user.id, groupView, settlement);
-                  return (
-                    <div
-                      key={settlement.id}
-                      className={`flex items-center gap-3 rounded-xl border border-primary/20 bg-card p-3 ${
-                        settlement.reversedAt ? "opacity-55" : ""
-                      }`}
-                    >
-                      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
-                        →
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className={`block truncate text-sm font-semibold ${settlement.reversedAt ? "line-through" : ""}`}>
-                          {membersById.get(settlement.fromUserId)?.displayName ?? "Someone"} paid{" "}
-                          {membersById.get(settlement.toUserId)?.displayName ?? "someone"}
-                        </span>
-                        <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                          {settlement.note}
-                        </span>
-                      </span>
-                      <span className="shrink-0 text-right">
-                        <span className="block text-sm font-bold tabular-nums">
-                          {formatMoney(settlement.amountMinor, group.currency)}
-                        </span>
-                        <span className="mt-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[0.65rem] font-semibold text-primary">
-                          {settlement.reversedAt ? "reversed" : "settled"}
-                        </span>
-                      </span>
-                      {canReverse && (
-                        <form action={reverseSettlementAction.bind(null, settlement.id)}>
-                          <Button type="submit" variant="ghost" size="sm">
-                            Undo
-                          </Button>
-                        </form>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </>
           )}
         </section>
       </div>
