@@ -3,7 +3,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { expenseSplits, expenses, groups, memberships, users } from "@/db/schema";
-import { getGroupForViewer, listExpenses, loadBalances } from "./groups";
+import { getGroupForViewer, listExpenses, listGroupsForViewer, loadBalances } from "./groups";
 
 const createdGroups: string[] = [];
 const createdUsers: string[] = [];
@@ -66,6 +66,40 @@ describe("getGroupForViewer", () => {
     expect(updated?.name).toBe("Updated Group");
     expect(updated?.description).toBe("New Description");
     expect(updated?.currency).toBe("EUR");
+  });
+});
+
+describe("listGroupsForViewer", () => {
+  it("lists groups in ascending order so newly created groups append at the end", async () => {
+    const user = await makeUser("Viewer");
+    const base = new Date("2026-01-01T00:00:00Z");
+
+    const [group1] = await db
+      .insert(groups)
+      .values({
+        name: "First Group",
+        currency: "PLN",
+        ownerId: user,
+        createdAt: new Date(base.getTime() + 1000),
+      })
+      .returning({ id: groups.id });
+    createdGroups.push(group1.id);
+    await db.insert(memberships).values({ groupId: group1.id, userId: user });
+
+    const [group2] = await db
+      .insert(groups)
+      .values({
+        name: "Second Group",
+        currency: "PLN",
+        ownerId: user,
+        createdAt: new Date(base.getTime() + 2000),
+      })
+      .returning({ id: groups.id });
+    createdGroups.push(group2.id);
+    await db.insert(memberships).values({ groupId: group2.id, userId: user });
+
+    const viewerGroups = await listGroupsForViewer(user);
+    expect(viewerGroups.map((g) => g.name)).toEqual(["First Group", "Second Group"]);
   });
 });
 

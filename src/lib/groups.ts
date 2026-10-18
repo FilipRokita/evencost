@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, isNull, lt } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, lt } from "drizzle-orm";
 import { db } from "@/db";
 import { expenseSplits, expenses, groups, inviteLinks, memberships, settlements, users } from "@/db/schema";
 import { computeBalances } from "@/domain/balances";
@@ -56,7 +56,7 @@ export async function listMembers(groupId: string): Promise<MemberRow[]> {
   }));
 }
 
-/** Groups the viewer is an active member of, newest first. */
+/** Groups the viewer is an active member of, oldest first (new groups append at the end). */
 export async function listGroupsForViewer(viewerId: string): Promise<GroupRow[]> {
   const rows = await db
     .select({ group: groups })
@@ -66,7 +66,7 @@ export async function listGroupsForViewer(viewerId: string): Promise<GroupRow[]>
       and(eq(memberships.groupId, groups.id), eq(memberships.userId, viewerId)),
     )
     .where(and(isNull(groups.deletedAt), isNull(memberships.leftAt)))
-    .orderBy(desc(groups.createdAt));
+    .orderBy(asc(groups.createdAt));
 
   return rows.map((row) => row.group);
 }
