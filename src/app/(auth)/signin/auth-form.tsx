@@ -32,7 +32,13 @@ export function AuthForm({
           : "Sign in to pick up where you left off."}
       </p>
 
-      <div className="mb-6 flex gap-1 rounded-xl bg-secondary p-1" role="tablist">
+      <div className="relative mb-6 flex gap-1 rounded-xl bg-secondary p-1" role="tablist">
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-y-1 left-1 w-[calc((100%_-_0.75rem)/2)] rounded-lg bg-accent transition-transform duration-200 ease-out motion-reduce:transition-none ${
+            signup ? "translate-x-0" : "translate-x-[calc(100%_+_0.25rem)]"
+          }`}
+        />
         {(
           [
             ["signup", "Sign up"],
@@ -45,9 +51,9 @@ export function AuthForm({
             role="tab"
             aria-selected={mode === value}
             onClick={() => setMode(value)}
-            className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+            className={`relative z-10 flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
               mode === value
-                ? "bg-accent text-accent-foreground"
+                ? "text-accent-foreground"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >

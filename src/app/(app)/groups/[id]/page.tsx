@@ -257,7 +257,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                     trigger={
                       <button
                         type="button"
-                        className={`flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+                        className={`flex w-full animate-in items-center gap-3 rounded-xl border border-border bg-card p-3 text-left fade-in slide-in-from-top-1 transition-colors duration-200 hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:animate-none ${
                           expense.deletedAt ? "opacity-55" : ""
                         }`}
                       >
