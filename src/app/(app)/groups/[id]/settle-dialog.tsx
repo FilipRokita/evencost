@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +39,7 @@ export function SettleDialog({
   trigger: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState<"suggested" | "custom">("suggested");
   const [selected, setSelected] = useState<Set<string>>(
     () => new Set(transfers.map(transferKey)),
   );
@@ -57,6 +58,7 @@ export function SettleDialog({
     if (next) {
       setSelected(new Set(transfers.map(transferKey)));
       setResult({});
+      setTab(transfers.length > 0 ? "suggested" : "custom");
     }
   }
 
@@ -88,6 +90,9 @@ export function SettleDialog({
     }
   }
 
+  const tabOffset =
+    tab === "suggested" ? "translate-x-0" : "translate-x-[calc(100%_+_0.25rem)]";
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -95,73 +100,143 @@ export function SettleDialog({
         <DialogHeader>
           <DialogTitle>Settle up</DialogTitle>
           <DialogDescription>
-            {transfers.length === 0
-              ? "Everyone is even. Nothing to settle."
-              : `${transfers.length} transfer${transfers.length === 1 ? "" : "s"} clears the whole group.`}
+            {tab === "suggested"
+              ? transfers.length === 0
+                ? "Everyone is even. Nothing to settle."
+                : `${transfers.length} transfer${transfers.length === 1 ? "" : "s"} clears the whole group.`
+              : "Record a partial or custom payment."}
           </DialogDescription>
         </DialogHeader>
 
         <DialogBody className="space-y-4">
-          {transfers.length > 0 && (
-          <div className="space-y-2">
-            {transfers.map((transfer, index) => {
-              const key = transferKey(transfer);
-              return (
-                <label
-                  key={`${key}-${index}`}
-                  className="flex cursor-pointer items-center gap-2 rounded-xl bg-secondary p-2.5"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selected.has(key)}
-                    onChange={() => toggle(key)}
-                    className="size-4 accent-[var(--primary)]"
-                  />
-                  <Avatar name={name(transfer.fromUserId)} color={color(transfer.fromUserId)} className="size-6 text-[0.6rem]" />
-                  <span className="min-w-0 truncate text-sm font-semibold">{name(transfer.fromUserId)}</span>
-                  <span className="text-muted-foreground">→</span>
-                  <Avatar name={name(transfer.toUserId)} color={color(transfer.toUserId)} className="size-6 text-[0.6rem]" />
-                  <span className="min-w-0 truncate text-sm font-semibold">{name(transfer.toUserId)}</span>
-                  <span className="ml-auto shrink-0 text-sm font-bold tabular-nums">
-                    {formatMoney(transfer.amountMinor, currency)}
-                  </span>
-                </label>
-              );
-            })}
-
-            {result.error && (
-              <p role="alert" className="text-sm font-semibold text-destructive">
-                {result.error}
-              </p>
-            )}
-
-            <Button className="w-full" onClick={record} disabled={pending || chosen.length === 0}>
-              {pending
-                ? "Recording…"
-                : `Record ${chosen.length} transfer${chosen.length === 1 ? "" : "s"}`}
-            </Button>
+          <div className="relative flex rounded-xl bg-secondary p-1">
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none absolute inset-y-1 left-1 w-[calc((100%_-_0.75rem)/2)] rounded-lg bg-accent transition-transform duration-200 ease-out motion-reduce:transition-none ${tabOffset}`}
+            />
+            <button
+              type="button"
+              aria-pressed={tab === "suggested"}
+              onClick={() => setTab("suggested")}
+              className={`relative z-10 flex-1 rounded-lg px-2 py-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+                tab === "suggested"
+                  ? "text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Suggested {transfers.length > 0 ? `(${transfers.length})` : ""}
+            </button>
+            <button
+              type="button"
+              aria-pressed={tab === "custom"}
+              onClick={() => setTab("custom")}
+              className={`relative z-10 flex-1 rounded-lg px-2 py-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+                tab === "custom"
+                  ? "text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Custom transfer
+            </button>
           </div>
-        )}
 
-        <div className="mt-2 border-t border-border pt-4">
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
-            Or record part of it
-          </p>
-          {/* Mounted only while the dialog is open, so its state cannot leak
-              into the next time the sheet is opened. */}
-          {open && <CustomTransferForm groupId={groupId} members={members} />}
-        </div>
-      </DialogBody>
-    </DialogContent>
+          {tab === "suggested" ? (
+            transfers.length > 0 ? (
+              <div className="space-y-2">
+                {transfers.map((transfer, index) => {
+                  const key = transferKey(transfer);
+                  return (
+                    <label
+                      key={`${key}-${index}`}
+                      className="flex cursor-pointer items-center gap-2 rounded-xl bg-secondary p-2.5"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selected.has(key)}
+                        onChange={() => toggle(key)}
+                        className="size-4 accent-[var(--primary)]"
+                      />
+                      <Avatar
+                        name={name(transfer.fromUserId)}
+                        color={color(transfer.fromUserId)}
+                        className="size-6 text-[0.6rem]"
+                      />
+                      <span className="min-w-0 truncate text-sm font-semibold">
+                        {name(transfer.fromUserId)}
+                      </span>
+                      <span className="text-muted-foreground">→</span>
+                      <Avatar
+                        name={name(transfer.toUserId)}
+                        color={color(transfer.toUserId)}
+                        className="size-6 text-[0.6rem]"
+                      />
+                      <span className="min-w-0 truncate text-sm font-semibold">
+                        {name(transfer.toUserId)}
+                      </span>
+                      <span className="ml-auto shrink-0 text-sm font-bold tabular-nums">
+                        {formatMoney(transfer.amountMinor, currency)}
+                      </span>
+                    </label>
+                  );
+                })}
+
+                {result.error && (
+                  <p role="alert" className="text-sm font-semibold text-destructive">
+                    {result.error}
+                  </p>
+                )}
+
+                <Button
+                  className="w-full"
+                  onClick={record}
+                  disabled={pending || chosen.length === 0}
+                >
+                  {pending
+                    ? "Recording…"
+                    : `Record ${chosen.length} transfer${chosen.length === 1 ? "" : "s"}`}
+                </Button>
+              </div>
+            ) : (
+              <div className="rounded-xl bg-secondary/50 p-6 text-center">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Everyone is even. Nothing to settle.
+                </p>
+              </div>
+            )
+          ) : (
+            open && (
+              <CustomTransferForm
+                groupId={groupId}
+                members={members}
+                onDone={() => setOpen(false)}
+              />
+            )
+          )}
+        </DialogBody>
+      </DialogContent>
     </Dialog>
   );
 }
 
-function CustomTransferForm({ groupId, members }: { groupId: string; members: Member[] }) {
+function CustomTransferForm({
+  groupId,
+  members,
+  onDone,
+}: {
+  groupId: string;
+  members: Member[];
+  onDone?: () => void;
+}) {
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     recordTransferAction,
     {},
   );
+
+  useEffect(() => {
+    if (state.success) {
+      onDone?.();
+    }
+  }, [state.success, onDone]);
 
   return (
     <form action={formAction} className="space-y-3">
@@ -202,7 +277,13 @@ function CustomTransferForm({ groupId, members }: { groupId: string; members: Me
 
       <div className="space-y-1.5">
         <Label htmlFor="amount">Amount</Label>
-        <Input id="amount" name="amount" inputMode="decimal" placeholder="0.00" className="tabular-nums" />
+        <Input
+          id="amount"
+          name="amount"
+          inputMode="decimal"
+          placeholder="0.00"
+          className="tabular-nums"
+        />
         {state.fieldErrors?.amount && (
           <p className="text-sm text-destructive">{state.fieldErrors.amount[0]}</p>
         )}
@@ -226,7 +307,7 @@ function CustomTransferForm({ groupId, members }: { groupId: string; members: Me
         </p>
       )}
 
-      <Button type="submit" variant="secondary" className="w-full" disabled={pending}>
+      <Button type="submit" className="w-full" disabled={pending}>
         {pending ? "Recording…" : "Record transfer"}
       </Button>
     </form>
