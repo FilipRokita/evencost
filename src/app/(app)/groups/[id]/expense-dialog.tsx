@@ -177,6 +177,8 @@ function ExpenseForm({
             )}
           </div>
 
+          <hr className="border-border" />
+
           <div className="space-y-2">
             <Label htmlFor="title">Description</Label>
             <Input
@@ -213,6 +215,8 @@ function ExpenseForm({
             </div>
           </div>
 
+          <hr className="border-border" />
+
           <div className="space-y-2">
             <Label>Paid by</Label>
             <div className="flex flex-wrap gap-2">
@@ -226,6 +230,28 @@ function ExpenseForm({
                     paidBy === member.id
                       ? "border-primary bg-primary/15 text-primary"
                       : "border-transparent bg-secondary text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Avatar name={member.displayName} color={member.avatarColor} className="size-6 text-[0.6rem]" />
+                  {member.displayName}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Participants</Label>
+            <div className="flex flex-wrap gap-2">
+              {members.map((member) => (
+                <button
+                  key={member.id}
+                  type="button"
+                  aria-pressed={participants.includes(member.id)}
+                  onClick={() => toggleParticipant(member.id)}
+                  className={`flex items-center gap-1.5 rounded-full border py-1 pr-3 pl-1 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+                    participants.includes(member.id)
+                      ? "border-primary bg-primary/15 text-primary"
+                      : "border-transparent bg-secondary text-muted-foreground/60 hover:text-foreground"
                   }`}
                 >
                   <Avatar name={member.displayName} color={member.avatarColor} className="size-6 text-[0.6rem]" />
@@ -259,28 +285,6 @@ function ExpenseForm({
                   }`}
                 >
                   {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Participants</Label>
-            <div className="flex flex-wrap gap-2">
-              {members.map((member) => (
-                <button
-                  key={member.id}
-                  type="button"
-                  aria-pressed={participants.includes(member.id)}
-                  onClick={() => toggleParticipant(member.id)}
-                  className={`flex items-center gap-1.5 rounded-full border py-1 pr-3 pl-1 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
-                    participants.includes(member.id)
-                      ? "border-primary bg-primary/15 text-primary"
-                      : "border-transparent bg-secondary text-muted-foreground/60 hover:text-foreground"
-                  }`}
-                >
-                  <Avatar name={member.displayName} color={member.avatarColor} className="size-6 text-[0.6rem]" />
-                  {member.displayName}
                 </button>
               ))}
             </div>
@@ -324,6 +328,8 @@ function ExpenseForm({
               )}
             </div>
           )}
+
+          <hr className="border-border" />
 
           <div className="space-y-2">
             <Label htmlFor="spentOn">Date</Label>
