@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { ArrowLeft, ChevronRight, Link2, Plus } from "lucide-react";
+import { AnimateNewExpenses } from "@/components/animate-new-expenses";
 import { CategoryIcon } from "@/components/category-icon";
 import { canEditExpense, canReverseSettlement } from "@/domain/permissions";
 import { netting } from "@/domain/netting";
@@ -214,7 +215,8 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
         </section>
 
         {/* On a phone: activity second. On desktop: the left column. */}
-        <section className="min-w-0 md:order-1 md:overflow-y-auto md:pr-2 md:pb-8">
+        <section id="expenses-section" className="min-w-0 md:order-1 md:overflow-y-auto md:pr-2 md:pb-8">
+          <AnimateNewExpenses targetId="expenses-section" />
           <div className="mt-8 mb-3 md:mt-0">
             <span className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
               Expenses
@@ -257,7 +259,8 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
                     trigger={
                       <button
                         type="button"
-                        className={`flex w-full animate-in items-center gap-3 rounded-xl border border-border bg-card p-3 text-left fade-in slide-in-from-top-1 transition-colors duration-200 hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:animate-none ${
+                        data-expense-row=""
+                        className={`flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
                           expense.deletedAt ? "opacity-55" : ""
                         }`}
                       >

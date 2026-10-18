@@ -99,6 +99,9 @@
   html {
     @apply font-sans;
     }
+  button:not(:disabled) {
+    cursor: pointer;
+    }
   /* Money is read in columns, so the digits have to line up. */
   .tabular {
     font-variant-numeric: tabular-nums;
