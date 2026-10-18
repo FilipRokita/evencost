@@ -141,14 +141,14 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
             Balances
           </p>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:pb-0">
             {balanceMembers.map((member) => {
               const amount = balances[member.id] ?? 0;
               const isSelf = member.id === session.user.id;
               const activeMember = member.leftAt === null;
               const canRemove = isOwner && !isSelf && activeMember;
               const tappable = isSelf || canRemove;
-              const tileClass = `w-full rounded-xl border border-border bg-card p-3 text-center ${
+              const tileClass = `w-[150px] shrink-0 rounded-xl border border-border bg-card p-3 text-center md:w-full ${
                 member.leftAt ? "opacity-75" : ""
               } ${
                 tappable
@@ -212,7 +212,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/gr
               trigger={
                 <button
                   type="button"
-                  className="flex min-h-[112px] w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  className="flex min-h-[112px] w-[150px] shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:w-full"
                 >
                   <Plus className="size-5" aria-hidden="true" />
                   Invite
