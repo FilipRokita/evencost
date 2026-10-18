@@ -88,7 +88,7 @@ function ProfileContent({ name, avatarColor }: { name: string; avatarColor?: str
         </div>
       </div>
 
-      <form action={formAction} className="space-y-3">
+      <form action={formAction} className="space-y-3 border-t border-border pt-4">
         <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
           <KeyRound className="size-3.5" aria-hidden="true" />
           Change password
@@ -121,7 +121,7 @@ function ProfileContent({ name, avatarColor }: { name: string; avatarColor?: str
           </p>
         )}
 
-        <Button type="submit" variant="secondary" className="w-full" disabled={pending}>
+        <Button type="submit" className="w-full" disabled={pending}>
           {pending ? "Changing…" : "Change password"}
         </Button>
       </form>
