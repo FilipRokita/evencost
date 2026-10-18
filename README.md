@@ -18,6 +18,16 @@
 
 ---
 
+<div align="center">
+  <a href="https://evencost-ivory.vercel.app">
+    <img src="https://img.shields.io/badge/LIVE_PREVIEW-Click_Here-green?style=for-the-badge">
+  </a>
+  <br>
+  <i>(Note: This is a live preview deployment and may be taken down or disabled at any time.)</i>
+</div>
+
+---
+
 ![EvenCost group on desktop and phone](docs/screenshots/showcase-group.png)
 
 ---

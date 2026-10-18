@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "homepage": "https://evencost-ivory.vercel.app",
   "engines": {
     "node": ">=20.9.0"
   },
