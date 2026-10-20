@@ -1,9 +1,11 @@
 "use client";
 
 import { useActionState, useState, type ReactNode } from "react";
-import { KeyRound, LogOut } from "lucide-react";
-import { changePasswordAction, signOutAction } from "@/app/(app)/actions";
+import Link from "next/link";
+import { KeyRound, LogOut, Trash2 } from "lucide-react";
+import { changePasswordAction, deleteAccountAction, signOutAction } from "@/app/(app)/actions";
 import { Avatar } from "@/components/avatar";
+import { ConfirmSubmit } from "@/components/confirm-submit";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -43,8 +45,9 @@ const PASSWORD_FIELDS: readonly {
 ];
 
 /**
- * The account sheet. It is the only route to changing a password or signing
- * out, which is why the avatar in the dashboard header opens it.
+ * The account sheet. It is the only route to changing a password, signing out
+ * or deleting the account, which is why the avatar in the dashboard header
+ * opens it.
  */
 export function ProfileDialog({
   name,
@@ -71,6 +74,10 @@ export function ProfileDialog({
 function ProfileContent({ name, avatarColor }: { name: string; avatarColor?: string }) {
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     changePasswordAction,
+    {},
+  );
+  const [deleteState, deleteAction] = useActionState<FormState, FormData>(
+    deleteAccountAction,
     {},
   );
 
@@ -134,6 +141,51 @@ function ProfileContent({ name, avatarColor }: { name: string; avatarColor?: str
             Sign out
           </Button>
         </form>
+
+        <form id="delete-account" action={deleteAction} className="space-y-3 border-t border-border pt-4">
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+            <Trash2 className="size-3.5" aria-hidden="true" />
+            Delete account
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Removes your email, password and sign-ins. Expenses you were part of stay in your
+            groups under &quot;Deleted user&quot;, so everyone&apos;s balances still add up.
+          </p>
+          <div className="space-y-1.5">
+            <Label htmlFor="deletePassword">Your password</Label>
+            <Input
+              id="deletePassword"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+            />
+            {deleteState.fieldErrors?.password?.[0] && (
+              <p className="text-sm text-destructive">{deleteState.fieldErrors.password[0]}</p>
+            )}
+          </div>
+          {deleteState.error && (
+            <p role="alert" className="text-sm font-semibold text-destructive">
+              {deleteState.error}
+            </p>
+          )}
+          <ConfirmSubmit
+            formId="delete-account"
+            label="Delete account"
+            title="Delete your account?"
+            description="This cannot be undone. You will be signed out and your email can no longer be used to log in."
+            className="w-full"
+          />
+        </form>
+
+        <p className="border-t border-border pt-4 text-center text-xs text-muted-foreground">
+          <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">
+            Terms
+          </Link>
+          {" · "}
+          <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
+            Privacy Policy
+          </Link>
+        </p>
       </DialogBody>
     </>
   );

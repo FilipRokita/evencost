@@ -100,6 +100,7 @@ file that proves it.
 | **Business rules know nothing about the framework** | Splits, balances, netting and permissions are plain TypeScript with no Next.js, React or database imports. [src/domain/](src/domain/) |
 | **Every action authorizes itself** | A Server Action is a public POST endpoint, so each one checks the session, validates its input and re-checks ownership. Hiding a button is never the boundary. [groups/actions.ts](<src/app/(app)/groups/actions.ts>) |
 | **Money is never a float** | Integer minor units everywhere; the form and the server run the same split function, and the server re-checks the sum before storing. [splits.ts](src/domain/splits.ts) |
+| **Deleting an account keeps the books** | The person is anonymized, not removed: email, password and sign-ins go, the name becomes "Deleted user", and every expense and balance still adds up. Tested against a real Postgres. [account.ts](src/lib/account.ts) · [account.test.ts](src/lib/account.test.ts) |
 | **Deletes are soft** | Expenses, memberships, settlements and groups are marked, never removed, so history and balances stay correct. [schema.ts](src/db/schema.ts) |
 | **Tests run the real arithmetic** | Property tests over random amounts and party sizes, plus an integration test that races two settle-ups against a real Postgres. [src/domain/](src/domain/) · [settle.test.ts](src/lib/settle.test.ts) |
 | **Dark, tabular, colour-blind safe** | Amounts use tabular figures, and green/red always comes with a sign and a word, never colour alone. [globals.css](src/app/globals.css) |
@@ -158,7 +159,12 @@ commented out for one or the other.
    | `BETTER_AUTH_URL` | the public URL of the deployment. |
    | `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` | `openssl rand -base64 32`. Required once more than one instance serves traffic. |
 
-4. **Deploy.** The build command applies migrations before building, so there is
+4. **Make the legal pages yours.** [`/terms`](<src/app/(legal)/terms/page.tsx>) and
+   [`/privacy`](<src/app/(legal)/privacy/page.tsx>) name the operator and a contact
+   address, both set in [src/lib/legal.ts](src/lib/legal.ts). Change them before
+   running your own copy.
+
+5. **Deploy.** The build command applies migrations before building, so there is
    no separate step and nothing to run by hand.
 
 **One caveat worth knowing:** sign-in throttling counts per process, which on a

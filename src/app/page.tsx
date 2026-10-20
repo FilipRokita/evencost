@@ -208,6 +208,14 @@ export default function Page() {
       <footer className="mt-20 flex flex-wrap justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground">
         <span>EvenCost. A portfolio project.</span>
         <span>Next.js · Drizzle · PostgreSQL · Netting</span>
+        <span className="flex gap-4">
+          <Link href="/terms" className="hover:text-foreground">
+            Terms
+          </Link>
+          <Link href="/privacy" className="hover:text-foreground">
+            Privacy Policy
+          </Link>
+        </span>
       </footer>
     </div>
   );

@@ -131,6 +131,11 @@ infer from the code.
 
 ## What the diagram does not show
 
+- **Deleting an account anonymizes the user row.** `users` is never deleted, so
+  the composite foreign keys from expenses, splits and settlements stay valid.
+  `displayName` becomes "Deleted user", `email` a unique `deleted-<id>@deleted.invalid`,
+  `image` is cleared, the person's `account`, `session` and `verification` rows
+  are removed and their memberships get `leftAt`. See `src/lib/account.ts`.
 - **Balances are not stored.** They are computed from expenses minus un-reversed
   settlements on every read, which is why there is no `balances` table and why a
   concurrent settle-up needs a row lock on the group (rule 14).

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { authAction } from "../actions";
 import { Button } from "@/components/ui/button";
@@ -116,7 +117,16 @@ function AuthFields({ mode, callbackUrl }: { mode: Mode; callbackUrl?: string })
 
       {signup && (
         <p className="text-sm text-muted-foreground">
-          Your email is used only to log in. The group never sees it.
+          Your email is used only to log in. The group never sees it. By creating an account you
+          accept the{" "}
+          <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">
+            Terms
+          </Link>{" "}
+          and the{" "}
+          <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
+            Privacy Policy
+          </Link>
+          .
         </p>
       )}
 
