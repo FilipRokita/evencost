@@ -149,7 +149,7 @@ commented out for one or the other.
 
 2. **Create the project** on your host and point it at this repository.
 
-3. **Set five variables** in the host's dashboard:
+3. **Set seven variables** in the host's dashboard:
 
    | Variable | What it is |
    | :--- | :--- |
@@ -158,13 +158,14 @@ commented out for one or the other.
    | `BETTER_AUTH_SECRET` | 32+ characters of entropy. `openssl rand -base64 32`. |
    | `BETTER_AUTH_URL` | the public URL of the deployment. |
    | `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` | `openssl rand -base64 32`. Required once more than one instance serves traffic. |
+   | `LEGAL_OPERATOR_NAME` | your name. The [Terms](<src/app/(legal)/terms/page.tsx>) and [Privacy Policy](<src/app/(legal)/privacy/page.tsx>) name you as the operator. The build stops without it. |
+   | `LEGAL_CONTACT_EMAIL` | your contact address for those pages. The build stops without it. |
 
-4. **Make the legal pages yours.** [`/terms`](<src/app/(legal)/terms/page.tsx>) and
-   [`/privacy`](<src/app/(legal)/privacy/page.tsx>) name the operator and a contact
-   address, both set in [src/lib/legal.ts](src/lib/legal.ts). Change them before
-   running your own copy.
+   The legal pages are written for a hobby project run from Poland: Polish law,
+   the Polish data protection authority, a minimum age of 16. Read them and adapt
+   the text if you run a copy elsewhere.
 
-5. **Deploy.** The build command applies migrations before building, so there is
+4. **Deploy.** The build command applies migrations before building, so there is
    no separate step and nothing to run by hand.
 
 **One caveat worth knowing:** sign-in throttling counts per process, which on a
