@@ -2,8 +2,17 @@ import { randomUUID } from "node:crypto";
 import { afterAll, describe, expect, it } from "vitest";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { accounts, groups, memberships, sessions, users, verifications } from "@/db/schema";
+import {
+  accounts,
+  groups,
+  inviteLinks,
+  memberships,
+  sessions,
+  users,
+  verifications,
+} from "@/db/schema";
 import { deleteAccount } from "./account";
+import { findUsableInvite } from "./invite";
 
 const createdGroups: string[] = [];
 const createdUsers: string[] = [];
@@ -114,5 +123,22 @@ describe("deleteAccount", () => {
 
     expect(await deleteAccount(owner.id)).toEqual({ ok: true });
     expect(groupId).toBeTruthy();
+  });
+
+  it("kills the invite links of a solo group it leaves behind", async () => {
+    const owner = await makeUser("Owner");
+    const groupId = await makeGroup(owner.id, []);
+    const token = randomUUID();
+    await db
+      .insert(inviteLinks)
+      .values({ groupId, token, expiresAt: new Date(Date.now() + 60_000) });
+    expect(await findUsableInvite(token)).not.toBeNull();
+
+    expect(await deleteAccount(owner.id)).toEqual({ ok: true });
+
+    // Nobody who still holds the link can join and read the erased user's history.
+    expect(await findUsableInvite(token)).toBeNull();
+    const [group] = await db.select().from(groups).where(eq(groups.id, groupId));
+    expect(group.deletedAt).not.toBeNull();
   });
 });

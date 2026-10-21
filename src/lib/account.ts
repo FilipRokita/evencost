@@ -40,6 +40,12 @@ export async function deleteAccount(userId: string): Promise<DeleteAccountResult
       .limit(1);
     if (shared) return { ok: false, error: "owns-shared-group" };
 
+    // What is left is a solo group. Soft-deleting it kills its invite links too,
+    // so nobody holding one can join and read the erased person's history.
+    await tx
+      .update(groups)
+      .set({ deletedAt: sql`now()` })
+      .where(and(eq(groups.ownerId, userId), isNull(groups.deletedAt)));
     await tx
       .update(memberships)
       .set({ leftAt: sql`now()` })
