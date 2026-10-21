@@ -30,6 +30,9 @@ jobs:
       # anyone in. Real values live in the host's environment.
       BETTER_AUTH_SECRET: ci-only-placeholder-secret-not-used-in-production
       BETTER_AUTH_URL: http://localhost:3000
+      # The legal pages read these at build time; the build stops without them.
+      LEGAL_OPERATOR_NAME: CI Placeholder
+      LEGAL_CONTACT_EMAIL: ci@example.invalid
 
     steps:
       - uses: actions/checkout@v7
