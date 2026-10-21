@@ -162,8 +162,10 @@ commented out for one or the other.
    | `LEGAL_CONTACT_EMAIL` | your contact address for those pages. The build stops without it. |
 
    The legal pages are written for a hobby project run from Poland: Polish law,
-   the Polish data protection authority, a minimum age of 16. Read them and adapt
-   the text if you run a copy elsewhere.
+   the Polish data protection authority, a minimum age of 16, and Vercel and Neon
+   as the providers that process the data (the "Who processes data for me"
+   section of the Privacy Policy). Read them and adapt the text if you run a copy
+   elsewhere or on a different host.
 
 4. **Deploy.** The build command applies migrations before building, so there is
    no separate step and nothing to run by hand.
