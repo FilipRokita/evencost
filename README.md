@@ -45,6 +45,10 @@ transfers** that clears the whole group. Record the **full settle-up** or a
 **partial payment**, and everyone can see who owes whom. No spreadsheets, no
 mental arithmetic, and no chasing people for small amounts.
 
+> **Side note:** EvenCost was also a test bed for Chinese LLMs. They were run
+> through the Claude Code harness to see how well they build a real,
+> full-stack app.
+
 ## 📖 Table of contents
 
 - [✨ What it does](#-what-it-does)
