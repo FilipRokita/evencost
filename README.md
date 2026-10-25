@@ -19,7 +19,7 @@
 ---
 
 <div align="center">
-  <a href="https://evencost-ivory.vercel.app">
+  <a href="https://evencost.filrok.com">
     <img src="https://img.shields.io/badge/LIVE_PREVIEW-Click_Here-green?style=for-the-badge">
   </a>
   <br>
@@ -184,6 +184,7 @@ The live preview is deployed using the following cloud services:
 | :--- | :--- | :--- |
 | **Application** | [Vercel](https://vercel.com) | Next.js serverless hosting, Server Actions, CI/CD from `main` |
 | **Database** | [Neon](https://neon.com) | Serverless PostgreSQL 17 (AWS Frankfurt `eu-central-1`) |
+| **Domain name** | [Cloudflare](https://www.cloudflare.com) | DNS for [evencost.filrok.com](https://evencost.filrok.com), pointing at the Vercel deployment |
 | **Source Code** | [GitHub](https://github.com) | Repository and version control |
 
 ## 📚 Documentation
