@@ -1,4 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "([ -z \"$DIRECT_URL\" ] || npm run db:migrate) && npm run build"
+  "buildCommand": "([ -z \"$DIRECT_URL\" ] || npm run db:migrate) && npm run build",
+  "git": {
+    "deploymentEnabled": {
+      "**": false,
+      "main": true
+    }
+  }
 }

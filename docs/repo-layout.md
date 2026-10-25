@@ -26,7 +26,7 @@ inside a folder is that folder's business, not this file's.
 | [`postcss.config.mjs`](../postcss.config.mjs) | Tailwind's PostCSS plugin, which the webpack dev server needs to process the styles. |
 | [`drizzle/`](../drizzle/) | Generated SQL migrations and their snapshots. Committed, so the schema history is in git. |
 | [`drizzle.config.ts`](../drizzle.config.ts) | drizzle-kit configuration. Migrations connect through `DIRECT_URL`, never the pooled URL. |
-| [`vercel.json`](../vercel.json) | The host's build command: apply migrations when `DIRECT_URL` is set, then build; a failed migration stops the build. |
+| [`vercel.json`](../vercel.json) | The host's build command: apply migrations when `DIRECT_URL` is set, then build; a failed migration stops the build. Also turns off Vercel deployments for every branch except `main`, so pull requests get no preview. |
 | [`components.json`](../components.json) | shadcn config. Its aliases point inside `src/`, or the CLI writes components to the wrong place. |
 
 ## Gitignored
