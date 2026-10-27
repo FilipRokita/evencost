@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { UsersRound } from "lucide-react";
 import { Avatar } from "@/components/avatar";
 import { Logo } from "@/components/logo";
 import { GroupTile } from "@/components/group-tile";
@@ -101,18 +100,6 @@ export default async function DashboardPage() {
       </p>
 
       <div className="min-h-0 flex-1 overflow-y-auto pb-16">
-        {tiles.length === 0 && (
-          <div className="mb-3 flex flex-col items-center rounded-2xl border border-dashed border-border px-6 py-10 text-center">
-            <span className="grid size-12 place-items-center rounded-2xl bg-secondary text-muted-foreground">
-              <UsersRound className="size-6" aria-hidden="true" />
-            </span>
-            <h2 className="mt-3 text-base font-bold">No groups yet</h2>
-            <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
-              Create one, share the invite link, and start splitting.
-            </p>
-          </div>
-        )}
-
         <div className="grid gap-3 md:grid-cols-2">
           {tiles.map(({ group, members, balance, outstanding }) => (
             <GroupTile
