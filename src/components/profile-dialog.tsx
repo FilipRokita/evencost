@@ -135,13 +135,6 @@ function ProfileContent({ name, avatarColor }: { name: string; avatarColor?: str
           </Button>
         </form>
 
-        <form action={signOutAction} className="border-t border-border pt-4">
-          <Button type="submit" variant="ghost" className="w-full">
-            <LogOut className="size-4" aria-hidden="true" />
-            Sign out
-          </Button>
-        </form>
-
         <form id="delete-account" action={deleteAction} className="space-y-3 border-t border-border pt-4">
           <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
             <Trash2 className="size-3.5" aria-hidden="true" />
@@ -175,6 +168,13 @@ function ProfileContent({ name, avatarColor }: { name: string; avatarColor?: str
             description="This cannot be undone. You will be signed out and your email can no longer be used to log in."
             className="w-full"
           />
+        </form>
+
+        <form action={signOutAction} className="border-t border-border pt-4">
+          <Button type="submit" variant="ghost" className="w-full">
+            <LogOut className="size-4" aria-hidden="true" />
+            Sign out
+          </Button>
         </form>
 
         <p className="border-t border-border pt-4 text-center text-xs text-muted-foreground">
